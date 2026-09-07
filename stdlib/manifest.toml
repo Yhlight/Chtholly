@@ -1,0 +1,35 @@
+format = 5
+package = "std"
+compiler_contract = 15
+library_api = 22
+
+[module]
+atomic = { name = "std::atomic", path = "atomic.cns", since = "1.1", imports = [], runtime_symbols = [], intrinsics = ["Atomic.init=atomic.init", "Atomic.load=atomic.load", "Atomic.store=atomic.store", "Atomic.exchange=atomic.exchange", "Atomic.compare_exchange=atomic.compare-exchange", "Atomic.fetch_add=atomic.fetch-add", "Atomic.fetch_sub=atomic.fetch-sub", "Atomic.fetch_and=atomic.fetch-and", "Atomic.fetch_or=atomic.fetch-or", "Atomic.fetch_xor=atomic.fetch-xor"] }
+callable = { name = "std::callable", path = "callable.cns", since = "1.2", imports = [], runtime_symbols = [], intrinsics = [] }
+channel = { name = "std::channel", path = "channel.cfdl", since = "1.10", imports = [], runtime_symbols = ["channel_close", "channel_init", "channel_receive", "channel_send"], intrinsics = [] }
+collections = { name = "std::collections", path = "collections.cns", since = "1.9", imports = ["std::error", "std::hash", "std::iter", "std::option", "std::result", "std::vec"], runtime_symbols = [], intrinsics = ["HashMap.make=container.hashmap-make", "HashMap.len=container.hashmap-len", "HashMap.capacity=container.hashmap-capacity", "HashMap.is_empty=container.hashmap-is-empty", "HashMap.contains=container.hashmap-contains", "HashMap.get=container.hashmap-get", "HashMap.get_mut=container.hashmap-get-mut", "HashMap.insert=container.hashmap-insert", "HashMap.remove=container.hashmap-remove", "HashMap.reserve=container.hashmap-reserve", "HashMap.clear=container.hashmap-clear", "HashMap.drop=container.hashmap-drop", "HashSet.make=container.hashset-make", "HashSet.len=container.hashset-len", "HashSet.capacity=container.hashset-capacity", "HashSet.is_empty=container.hashset-is-empty", "HashSet.contains=container.hashset-contains", "HashSet.insert=container.hashset-insert", "HashSet.remove=container.hashset-remove", "HashSet.reserve=container.hashset-reserve", "HashSet.clear=container.hashset-clear", "HashSet.drop=container.hashset-drop"] }
+compare = { name = "std::compare", path = "compare.cns", since = "1.0", imports = [], runtime_symbols = [], intrinsics = [] }
+convert = { name = "std::convert", path = "convert.cns", since = "1.0", imports = [], runtime_symbols = [], intrinsics = [] }
+env = { name = "std::env", path = "env.cns", since = "1.3", imports = [], runtime_symbols = [], intrinsics = ["arg=env.arg", "arg_count=env.arg-count"] }
+error = { name = "std::error", path = "error.cns", since = "1.0", imports = ["std::ops"], runtime_symbols = [], intrinsics = [] }
+fs = { name = "std::fs", path = "fs.cns", since = "1.3", imports = ["std::error", "std::host", "std::result", "std::text"], runtime_symbols = [], intrinsics = ["exists=fs.exists", "write=fs.write", "remove=fs.remove"] }
+hash = { name = "std::hash", path = "hash.cns", since = "1.0", imports = ["std::ops"], runtime_symbols = [], intrinsics = ["wrapping_mul=hash.wrapping-mul", "hash_float=hash.float", "equal_float=equal.float", "hash_pointer=hash.pointer", "equal_pointer=equal.pointer"] }
+host = { name = "std::host", path = "host.cfdl", since = "1.3", imports = [], runtime_symbols = ["host_close", "host_create", "host_open", "host_open_read", "host_read", "host_write", "monotonic_now", "task_cancel", "task_join", "task_poll", "task_spawn", "task_wake"], intrinsics = [] }
+io = { name = "std::io", path = "io.cns", since = "1.3", imports = ["std::error", "std::result"], runtime_symbols = [], intrinsics = ["write_stderr=io.write-stderr", "write_stdout=io.write-stdout"] }
+iter = { name = "std::iter", path = "iter.cns", since = "1.5", imports = [], runtime_symbols = [], intrinsics = [] }
+iter_adapters = { name = "std::iter::adapters", path = "iter_adapters.cns", since = "1.6", imports = ["std::callable", "std::iter"], runtime_symbols = [], intrinsics = [] }
+iter_algorithms = { name = "std::iter::algorithms", path = "iter_algorithms.cns", since = "1.7", imports = ["std::callable", "std::iter", "std::iter::adapters", "std::vec"], runtime_symbols = [], intrinsics = [] }
+iter_mutable = { name = "std::iter::mutable", path = "iter_mutable.cns", since = "1.9", imports = ["std::callable", "std::iter"], runtime_symbols = [], intrinsics = [] }
+log = { name = "std::log", path = "log.cns", since = "1.10", imports = ["std::error", "std::io", "std::result"], runtime_symbols = [], intrinsics = [] }
+net = { name = "std::net", path = "net.cns", since = "1.10", imports = ["std::error", "std::net::raw", "std::result"], runtime_symbols = [], intrinsics = [] }
+net_raw = { name = "std::net::raw", path = "net.cfdl", since = "1.10", imports = [], runtime_symbols = ["accept", "close", "listen", "read", "write"], intrinsics = [] }
+ops = { name = "std::ops", path = "ops.cns", since = "1.3", imports = ["std::compare"], runtime_symbols = [], intrinsics = [] }
+option = { name = "std::option", path = "option.cns", since = "1.3", imports = [], runtime_symbols = [], intrinsics = ["Option.is_some=option.is-some", "Option.is_none=option.is-none", "Option.unwrap=option.unwrap", "Option.as_ref=option.as-ref", "Option.as_mut=option.as-mut"] }
+result = { name = "std::result", path = "result.cns", since = "1.0", imports = ["std::callable"], runtime_symbols = [], intrinsics = [] }
+sync = { name = "std::sync", path = "sync.cns", since = "1.10", imports = ["std::error", "std::result", "std::sync::raw"], runtime_symbols = [], intrinsics = [] }
+sync_raw = { name = "std::sync::raw", path = "sync.cfdl", since = "1.10", imports = [], runtime_symbols = ["condvar_close", "condvar_init", "condvar_notify_all", "condvar_notify_one", "condvar_wait", "mutex_close", "mutex_init", "mutex_lock", "mutex_unlock"], intrinsics = [] }
+text = { name = "std::text", path = "text.cns", since = "1.3", imports = [], runtime_symbols = [], intrinsics = ["as_bytes=text.as-bytes", "slice_data=text.slice-data", "slice_data_mut=text.slice-data-mut"] }
+time = { name = "std::time", path = "time.cns", since = "1.0", imports = ["std::result"], runtime_symbols = [], intrinsics = [] }
+typed_channel = { name = "std::typed_channel", path = "typed_channel.cns", since = "1.10", imports = ["std::error", "std::result"], runtime_symbols = [], intrinsics = ["Channel.close=channel.close", "Channel.drop=channel.drop", "Channel.init=channel.init", "Channel.receive=channel.receive", "Channel.send=channel.send"] }
+vec = { name = "std::vec", path = "vec.cns", since = "1.3", imports = ["std::iter", "std::option"], runtime_symbols = [], intrinsics = ["Vec.init=vec.init", "Vec.len=vec.len", "Vec.capacity=vec.capacity", "Vec.reserve=vec.reserve", "Vec.push=vec.push", "Vec.at=vec.at", "Vec.at_mut=vec.at-mut", "Vec.pop=vec.pop", "Vec.remove=vec.remove", "Vec.clear=vec.clear", "Vec.drop=vec.drop", "Vec.iter=vec.iter", "Vec.iter_mut=vec.iter-mut", "VecIterator.next=vec.iter-next", "VecMutIterator.next=vec.iter-mut-next"] }
+volatile = { name = "std::volatile", path = "volatile.cns", since = "1.1", imports = [], runtime_symbols = [], intrinsics = ["load=volatile.load", "store=volatile.store"] }

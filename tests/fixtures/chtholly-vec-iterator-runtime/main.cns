@@ -1,0 +1,25 @@
+module main;
+
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(17);
+  let iterator = values.iter();
+  let step = (move iterator).next();
+  return switch (step) {
+    std::vec::VecIterStep<i32>::Done => 1;
+    std::vec::VecIterStep<i32>::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      if (item != 17) { return 2; }
+      let final_step = (move continuation).next();
+      let final_result = switch (final_step) {
+        std::vec::VecIterStep<i32>::Done => 0;
+        std::vec::VecIterStep<i32>::Item { .. } => 3;
+      };
+      final_result
+    };
+  };
+}

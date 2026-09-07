@@ -1,0 +1,173 @@
+module std::iter::mutable;
+
+import std::callable;
+import std::iter;
+
+pub trait PredicateMut<Args> {
+  fn test(self: Self&, args: Args): bool;
+}
+
+pub trait FolderMut<Accumulator, Item> {
+  fn combine(self: Self&, accumulator: Accumulator,
+             item: Item): Accumulator;
+}
+
+pub struct MapMut<I, F> {
+  iterator: I;
+  function: F;
+}
+
+pub fn map_mut<I, F>(iterator: I, function: F): MapMut<I, F>
+    where I: std::iter::Iterator,
+          F: std::callable::InvokeMut<(I::Item,)> {
+  return MapMut<I, F> {
+    .iterator = move iterator,
+    .function = move function,
+  };
+}
+
+impl<I, F> std::iter::Iterator for MapMut<I, F>
+    where I: std::iter::Iterator,
+          F: std::callable::InvokeMut<(I::Item,)> {
+  alias Item = F::Output;
+
+  fn next(self: Self): std::iter::IterationStep<F::Output, Self> {
+    let step = (move self.iterator).next();
+    return switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done =>
+          std::iter::IterationStep<F::Output, Self>::Done {};
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        var function = move self.function;
+        let output = function.invoke((move item,));
+        std::iter::IterationStep<F::Output, Self>::Item {
+          move output,
+          MapMut<I, F> {
+            .iterator = move continuation,
+            .function = move function,
+          }
+        }
+      };
+    };
+  }
+}
+
+pub struct FilterMut<I, P> {
+  iterator: I;
+  predicate: P;
+}
+
+pub fn filter_mut<I, P>(iterator: I, predicate: P): FilterMut<I, P>
+    where I: std::iter::Iterator,
+          P: PredicateMut<(I::Item,)> {
+  return FilterMut<I, P> {
+    .iterator = move iterator,
+    .predicate = move predicate,
+  };
+}
+
+impl<I, P> std::iter::Iterator for FilterMut<I, P>
+    where I: std::iter::Iterator,
+          P: PredicateMut<(I::Item,)> {
+  alias Item = I::Item;
+
+  fn next(self: Self): std::iter::IterationStep<I::Item, Self> {
+    var iterator = move self.iterator;
+    var predicate = move self.predicate;
+    while (true) {
+      let step = (move iterator).next();
+      switch (step) {
+        std::iter::IterationStep<I::Item, I>::Done => {
+          return std::iter::IterationStep<I::Item, Self>::Done {};
+        };
+        std::iter::IterationStep<I::Item, I>::Item {
+          item = move .0,
+          continuation = move .1
+        } => {
+          iterator = move continuation;
+          if (predicate.test((copy item,))) {
+            return std::iter::IterationStep<I::Item, Self>::Item {
+              move item,
+              FilterMut<I, P> {
+                .iterator = move iterator,
+                .predicate = move predicate,
+              }
+            };
+          }
+          continue;
+        };
+      };
+    }
+  }
+}
+
+pub fn fold_mut<I, A, F>(iterator: I, initial: A, folder: F): A
+    where I: std::iter::Iterator,
+          F: FolderMut<A, I::Item> {
+  var remaining = move iterator;
+  var accumulator = move initial;
+  var function = move folder;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => {
+        return move accumulator;
+      };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        accumulator = function.combine(move accumulator, move item);
+        continue;
+      };
+    };
+  }
+}
+
+pub fn any_mut<I, P>(iterator: I, predicate: P): bool
+    where I: std::iter::Iterator,
+          P: PredicateMut<(I::Item,)> {
+  var remaining = move iterator;
+  var function = move predicate;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => { return false; };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        if (function.test((move item,))) { return true; }
+        continue;
+      };
+    };
+  }
+}
+
+pub fn all_mut<I, P>(iterator: I, predicate: P): bool
+    where I: std::iter::Iterator,
+          P: PredicateMut<(I::Item,)> {
+  var remaining = move iterator;
+  var function = move predicate;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => { return true; };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        if (function.test((move item,))) {
+          continue;
+        } else {
+          return false;
+        }
+      };
+    };
+  }
+}

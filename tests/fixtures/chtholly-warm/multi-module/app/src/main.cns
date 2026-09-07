@@ -1,0 +1,6 @@
+module app;
+import facade;
+
+fn main(): i32 {
+  return facade::relay(facade::identity(42));
+}

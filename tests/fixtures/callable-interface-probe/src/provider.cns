@@ -1,0 +1,7 @@
+module provider;
+import std::callable;
+
+pub fn apply<T>(value: T): T {
+  let captured = fn [copy value](): T { return value; };
+  return captured();
+}

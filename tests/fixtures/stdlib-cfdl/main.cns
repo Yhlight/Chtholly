@@ -1,0 +1,6 @@
+module demo;
+import std::session as session;
+
+fn main(): i32 {
+  return 0;
+}

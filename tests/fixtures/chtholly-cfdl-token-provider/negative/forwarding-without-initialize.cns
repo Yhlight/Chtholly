@@ -1,0 +1,15 @@
+module forwarding_without_initialize;
+
+import token_provider;
+
+fn no_initialize(token: token_provider::Token&): i32 {
+  return 0;
+}
+
+fn main(): i32 {
+  unsafe {
+    let token: token_provider::Token;
+    no_initialize(token);
+    return 0;
+  }
+}

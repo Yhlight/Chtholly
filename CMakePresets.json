@@ -1,0 +1,138 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-msvc-ninja",
+      "displayName": "Windows MSVC Ninja preview build",
+      "generator": "Ninja",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "binaryDir": "${sourceDir}/build-ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CHTHOLLY_BUILD_TOOLS": "ON",
+        "CHTHOLLY_BUILD_TESTS": "ON",
+        "CHTHOLLY_USE_SCCACHE": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-clang-ninja",
+      "displayName": "Linux Clang Ninja preview build",
+      "generator": "Ninja",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "binaryDir": "${sourceDir}/build-ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_CXX_COMPILER": "clang++-18",
+        "CHTHOLLY_BUILD_TOOLS": "ON",
+        "CHTHOLLY_BUILD_TESTS": "ON",
+        "CHTHOLLY_USE_SCCACHE": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-wsl-clang-ninja",
+      "displayName": "Linux WSL Clang Ninja local build",
+      "generator": "Ninja",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "binaryDir": "${sourceDir}/build-wsl",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_CXX_COMPILER": "clang++-18",
+        "CMAKE_PREFIX_PATH": "/usr/lib/llvm-18",
+        "LLVM_DIR": "/usr/lib/llvm-18/lib/cmake/llvm",
+        "Clang_DIR": "/usr/lib/llvm-18/lib/cmake/clang",
+        "CHTHOLLY_BUILD_TOOLS": "ON",
+        "CHTHOLLY_BUILD_TESTS": "ON",
+        "CHTHOLLY_USE_SCCACHE": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-asan-clang-ninja",
+      "inherits": "linux-clang-ninja",
+      "binaryDir": "${sourceDir}/build-asan-abi2",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address -fno-omit-frame-pointer",
+        "CMAKE_C_FLAGS": "-fsanitize=address -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address",
+        "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=address"
+      },
+      "condition": {"type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux"}
+    },
+    {
+      "name": "linux-tsan-clang-ninja",
+      "inherits": "linux-clang-ninja",
+      "binaryDir": "${sourceDir}/build-tsan-abi2",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=thread",
+        "CMAKE_C_FLAGS": "-fsanitize=thread",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=thread",
+        "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=thread"
+      },
+      "condition": {"type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux"}
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-msvc-ninja",
+      "configurePreset": "windows-msvc-ninja"
+    },
+    {
+      "name": "linux-clang-ninja",
+      "configurePreset": "linux-clang-ninja"
+    },
+    {
+      "name": "linux-wsl-clang-ninja",
+      "configurePreset": "linux-wsl-clang-ninja"
+    },
+    {
+      "name": "linux-asan-clang-ninja",
+      "configurePreset": "linux-asan-clang-ninja"
+    },
+    {
+      "name": "linux-tsan-clang-ninja",
+      "configurePreset": "linux-tsan-clang-ninja"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-msvc-ninja",
+      "configurePreset": "windows-msvc-ninja",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-clang-ninja",
+      "configurePreset": "linux-clang-ninja",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-wsl-clang-ninja",
+      "configurePreset": "linux-wsl-clang-ninja",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

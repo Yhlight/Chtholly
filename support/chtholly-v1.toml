@@ -1,0 +1,591 @@
+schema = "chtholly-language-surface-v2"
+release = "1.0"
+status = "frozen"
+compiler = "chtholly"
+evidence_matrix = "support/chtholly-feature-evidence.toml"
+
+normative_specs = [
+  "docs/spec/README.md",
+  "docs/spec/language-charter.md",
+  "docs/spec/v1-language-roadmap.md",
+  "docs/spec/abstract-machine-and-memory-model.md",
+  "docs/spec/lexical-and-grammar.md",
+  "docs/spec/expressions-and-control-flow.md",
+  "docs/spec/types-and-values.md",
+  "docs/spec/constant-evaluation-and-layout.md",
+  "docs/spec/declarations-callables-and-generics.md",
+  "docs/spec/interfaces-and-specialization.md",
+  "docs/spec/names-and-scopes.md",
+  "docs/spec/failure-lifecycle-and-storage.md",
+  "docs/spec/modules-programs-unsafe-and-ffi.md",
+  "docs/spec/language-versioning.md",
+  "docs/spec/core-language.md",
+  "docs/spec/component-and-ffi-abi.md",
+  "docs/spec/cfdl.md",
+  "docs/spec/language-surface.md",
+]
+
+forbidden_compatibility_spellings = [
+  "let mut ",
+  "&mut ",
+  "match ",
+  "async fn ",
+  ".await",
+]
+
+[[feature]]
+id = "lexical-core"
+title = "Lexical structure and scalar literals"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#lexical-and-names"
+tokens = ["Identifier", "IntegerLiteral", "FloatLiteral", "StringLiteral", "CStringLiteral", "CharLiteral"]
+nodes = ["Name", "IntegerLiteral", "FloatLiteral", "StringLiteral", "CStringLiteral", "CharLiteral", "BoolLiteral", "NullLiteral"]
+evidence = ["scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "modules"
+title = "Modules, imports, re-exports, and visibility"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#modules-and-visibility"
+tokens = ["KwModule", "KwImport", "KwExport", "KwPub"]
+nodes = ["ModuleDecl", "ImportDecl", "ModulePath"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "bindings-and-control-flow"
+title = "Bindings and structured control flow"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#bindings-and-control-flow"
+tokens = ["KwLet", "KwVar", "KwIf", "KwElse", "KwWhile", "KwReturn"]
+nodes = ["LetStmt", "IfStmt", "WhileStmt", "ReturnStmt", "AssignmentStmt"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "nominal-types"
+title = "Structs, payload enums, and exhaustive switch"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#nominal-types-and-patterns"
+tokens = ["KwStruct", "KwEnum", "KwSwitch"]
+nodes = ["StructDecl", "EnumDecl", "EnumVariant", "EnumPayloadField", "SwitchExpr", "SwitchArm", "EnumPattern", "WildcardPattern"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "ownership-and-references"
+title = "Affine ownership, checked references, and initialization"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#ownership-and-references"
+tokens = ["KwMove", "KwCopy", "KwConst"]
+nodes = ["MoveExpr", "CopyExpr", "ReferenceType"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "generics"
+title = "Generic functions and generic nominal types"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#generics-and-inherent-functions"
+nodes = ["GenericParameterList", "GenericType"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "inherent-functions"
+title = "Instance methods and associated functions"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#generics-and-inherent-functions"
+tokens = ["KwImpl"]
+nodes = ["ImplDecl", "MemberExpr", "TypeMemberExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "tests/chtholly_lsp_protocol_tests.py"]
+
+[[feature]]
+id = "unsafe-and-pointers"
+title = "Unsafe authority and raw pointers"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#unsafe-and-foreign-boundaries"
+tokens = ["KwUnsafe"]
+nodes = ["UnsafeStmt", "UnsafeExpr", "RawPointerType", "UnaryExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "c-representation"
+title = "C representation and active-member unions"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#representation-and-lifecycle"
+tokens = ["KwUnion"]
+nodes = ["RepresentationAttribute", "UnionDecl", "UnionField"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "representation-and-lifecycle"
+title = "Custom representation and lifecycle policies"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#representation-and-lifecycle"
+nodes = ["RepresentationAttribute", "LifecycleAttribute"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "cfdl-components"
+title = "CFDL resources and semantic component interfaces"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#components-and-cfdl"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "failure-propagation"
+title = "Typed Result propagation with question-mark"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#failure-propagation"
+tokens = ["Question"]
+nodes = ["TryExpr"]
+evidence = ["scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "noncapturing-callables"
+title = "Function values and non-capturing callable values"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#non-capturing-callables"
+nodes = ["FunctionPointerType"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "diagnostic-recovery"
+title = "Stable recovery and source diagnostics for the implemented baseline"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#diagnostic-recovery"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "conditional-expressions"
+title = "C-shaped conditional forms and expression results"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/expressions-and-control-flow.md#conditional-expressions"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "c-style-loops"
+title = "C-style for and do-while loops"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/expressions-and-control-flow.md#structured-statement-control-flow"
+tokens = ["KwFor", "KwDo", "KwBreak", "KwContinue"]
+nodes = ["ForStmt", "ForInit", "ForCondition", "ForStep", "DoWhileStmt", "BreakStmt", "ContinueStmt"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "implicit-coercions"
+title = "Lossless implicit coercions"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/types-and-values.md#numeric-types-and-conversions"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "temporaries-value-model"
+title = "Temporaries and the complete value model"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/abstract-machine-and-memory-model.md#expression-results-and-temporaries"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "result-design"
+title = "Complete Result and residual-flow design"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/failure-lifecycle-and-storage.md#result-flow"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "interfaces"
+title = "User-defined interfaces and dispatch"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/interfaces-and-specialization.md#source-forms"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "explicit-checked-casts"
+title = "Numeric as and checked as conversions"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/types-and-values.md#numeric-types-and-conversions"
+nodes = ["CastExpr", "CheckedCastExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "overloads-defaults-named-arguments"
+title = "Overloads, default arguments, and named arguments"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/declarations-callables-and-generics.md#candidate-resolution"
+nodes = ["DefaultParameter", "NamedArgument", "CallExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "nominal-construction-destruction"
+title = "Nominal construction and destruction"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#9-nominal-construction-and-destruction"
+tokens = ["KwIn"]
+nodes = ["CallExpr", "PlacementExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "builtin-operators"
+title = "Builtin C-family and modern operators"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#10-builtin-operators"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "constants-constant-evaluation"
+title = "Constants, const functions, and constant evaluation"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/constant-evaluation-and-layout.md#declarations"
+tokens = ["KwConst", "KwStatic", "KwSizeof", "KwAlignof"]
+nodes = ["ConstDecl", "StaticDecl", "SizeofExpr", "AlignofExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "evaluation-order"
+title = "Complete expression evaluation order"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#12-evaluation-order"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "defer"
+title = "Lexical deferred actions"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#13-defer"
+tokens = ["KwDefer"]
+nodes = ["DeferStmt"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "aliases-interface-constraints"
+title = "Aliases and interface constraint syntax"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/interfaces-and-specialization.md#source-forms"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "layout-queries"
+title = "Size, alignment, and controlled layout queries"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/constant-evaluation-and-layout.md#layout-queries"
+tokens = ["KwSizeof", "KwAlignof"]
+nodes = ["SizeofExpr", "AlignofExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "closed-type-properties"
+title = "Closed compile-time type-property queries"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/constant-evaluation-and-layout.md#closed-type-property-queries"
+nodes = ["TypeSameExpr", "TypeIsExpr", "TypeHasExpr", "ArrayExtentExpr", "TupleArityExpr", "ElementTypeExpr", "PointeeTypeExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "bound-methods"
+title = "Bound method values"
+scope = "post-v1"
+design = "pending"
+implementation = "none"
+spec = "docs/spec/v1-language-roadmap.md#16-bound-methods"
+evidence = []
+
+[[feature]]
+id = "structured-destructuring"
+title = "Brace-based structured destructuring"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#17-structured-destructuring"
+nodes = ["StructuredPattern", "PatternBinding", "PatternProjection", "PatternRest", "PatternParameter"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "null-raw-pointers"
+title = "Null and raw-pointer rules"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#18-null-and-raw-pointers"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "callable-system"
+title = "Environment-bearing callable values"
+scope = "post-v1"
+design = "pending"
+implementation = "partial"
+spec = "docs/spec/v1-language-roadmap.md#19-callables"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "callable-contracts"
+title = "Bodyless callable contracts and ownership summaries"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#callable-contracts"
+evidence = ["tests/chtholly_callable_contract_tests.cpp", "tests/chtholly_contract_artifact_tests.cpp", "stdlib/vec.cns"]
+
+[[feature]]
+id = "operator-overloading"
+title = "Operator overloading"
+scope = "post-v1"
+design = "pending"
+implementation = "none"
+spec = "docs/spec/v1-language-roadmap.md#20-operator-overloading"
+evidence = []
+
+[[feature]]
+id = "numeric-model"
+title = "Numeric types, literals, and overflow"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/types-and-values.md#numeric-types-and-conversions"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "aggregate-text-types"
+title = "Arrays, slices, tuples, and strings"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#22-aggregate-and-text-types"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "never-unreachable"
+title = "Never type and unreachable control flow"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/types-and-values.md#never"
+tokens = ["KwNever"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "unrecoverable-failure"
+title = "Unrecoverable failure model"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/failure-lifecycle-and-storage.md#unrecoverable-failure"
+tokens = ["KwAssert", "KwUnreachable"]
+nodes = ["AssertStmt", "UnreachableStmt"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "storage-duration"
+title = "Storage duration, globals, and static initialization"
+scope = "v1"
+design = "normative"
+spec = "docs/spec/failure-lifecycle-and-storage.md#storage-and-allocation"
+implementation = "complete"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "allocation-placement-construction"
+title = "Object allocation and placement construction"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#26-allocation-and-placement-construction"
+tokens = ["KwIn"]
+nodes = ["PlacementExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "names-scopes-shadowing"
+title = "Names, scopes, and shadowing"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/names-and-scopes.md#namespace-model"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "generic-inference-specialization"
+title = "Generic inference and specialization"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/interfaces-and-specialization.md#inference-and-specialization"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "module-aliases"
+title = "Module aliases and imported-name control"
+scope = "post-v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#29-module-aliases"
+evidence = ["tests/chtholly_module_alias_tests.cpp", "docs/spec/modules-programs-unsafe-and-ffi.md", "lib/Compiler/IR/ImportIR.cpp"]
+
+[[feature]]
+id = "labeled-loop-control"
+title = "Labeled structured loop control"
+scope = "post-v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#30-labeled-loop-control"
+evidence = ["tests/chtholly_labeled_loop_tests.cpp", "docs/design/next-labeled-loop-control.md", "lib/Compiler/Semantics/CallableOwnership.cpp"]
+
+[[feature]]
+id = "core-library-protocols"
+title = "Core and standard-library protocol boundary"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/interfaces-and-specialization.md#core-and-library-protocol-boundary"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "concurrency-memory-boundary"
+title = "Atomic, volatile, and concurrency memory boundary"
+scope = "post-v1"
+design = "pending"
+implementation = "none"
+spec = "docs/spec/v1-language-roadmap.md#32-concurrency-memory-boundary"
+evidence = []
+
+[[feature]]
+id = "public-callable-identity"
+title = "ABI, overload, and public callable identity"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/declarations-callables-and-generics.md#public-and-native-identity"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "language-versioning"
+title = "Language version and compatibility policy"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-versioning.md#source-version-selection"
+evidence = ["scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "lexical-grammar"
+title = "Lexical, source, and formal grammar"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/lexical-and-grammar.md#source-text-and-locations"
+evidence = ["scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "nominal-data-patterns"
+title = "Nominal data and pattern system"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1-language-roadmap.md#36-nominal-data-and-patterns"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "contextual-typing"
+title = "Contextual typing and expression convergence"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/types-and-values.md#contextual-control-expression-results"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "foreign-linkage-boundary"
+title = "CFDL artifact linkage and resource-flow boundary"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/cfdl.md#source-surface"
+evidence = ["scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "unsafe-authority"
+title = "Unsafe operations and intrinsic authority"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/modules-programs-unsafe-and-ffi.md#unsafe-authority"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "program-model"
+title = "Program entry, execution environment, and prelude"
+scope = "v1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/modules-programs-unsafe-and-ffi.md#program-model"
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "async-syntax"
+title = "Public async and coroutine syntax"
+scope = "post-v1"
+design = "pending"
+implementation = "partial"
+spec = "docs/spec/language-surface.md#versioned-extensions"
+evidence = [
+  "scripts/compiler-boundary-audit.py",
+  "scripts/compiler-boundary-audit.py",
+  "scripts/compiler-boundary-audit.py",
+]

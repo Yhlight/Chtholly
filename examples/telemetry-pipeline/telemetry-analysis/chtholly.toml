@@ -1,0 +1,9 @@
+[package]
+name = "telemetry-analysis"
+language = "1.9"
+
+[build]
+module_paths = ["src"]
+
+[dependencies]
+telemetry-model = { workspace = true }

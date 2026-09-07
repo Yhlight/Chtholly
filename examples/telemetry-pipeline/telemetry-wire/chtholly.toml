@@ -1,0 +1,6 @@
+[package]
+name = "telemetry-wire"
+language = "1.10"
+
+[build]
+module_paths = ["src"]

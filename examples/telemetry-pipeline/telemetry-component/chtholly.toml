@@ -1,0 +1,11 @@
+[package]
+name = "telemetry-component"
+language = "1.10"
+
+[build]
+module_paths = ["src"]
+
+[component]
+abi = 1
+identity = "org.chtholly.examples.telemetry-pipeline.component"
+exports = ["telemetry::component::checksum"]

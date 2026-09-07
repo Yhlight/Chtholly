@@ -1,0 +1,112 @@
+module telemetry::wire;
+
+import std::result;
+
+pub const FRAME_SIZE: usize = 36usize;
+pub const PAYLOAD_SIZE: u32 = 24u32;
+pub const VERSION: u16 = 1u16;
+
+pub struct Frame {
+  pub timestamp: u64;
+  pub sensor: i32;
+  pub value: i32;
+  pub sequence: u64;
+}
+
+pub enum FrameError {
+  InvalidMagic,
+  UnsupportedVersion,
+  InvalidLength,
+  Truncated,
+  SequenceRegression,
+  TimestampOverflow,
+}
+
+fn read_u16(bytes: u8[36], offset: usize): u16 {
+  return (bytes[offset] as u16) |
+         ((bytes[offset + 1usize] as u16) << 8u16);
+}
+
+fn read_u32(bytes: u8[36], offset: usize): u32 {
+  return (bytes[offset] as u32) |
+         ((bytes[offset + 1usize] as u32) << 8u32) |
+         ((bytes[offset + 2usize] as u32) << 16u32) |
+         ((bytes[offset + 3usize] as u32) << 24u32);
+}
+
+fn read_u64(bytes: u8[36], offset: usize): u64 {
+  return (bytes[offset] as u64) |
+         ((bytes[offset + 1usize] as u64) << 8u64) |
+         ((bytes[offset + 2usize] as u64) << 16u64) |
+         ((bytes[offset + 3usize] as u64) << 24u64) |
+         ((bytes[offset + 4usize] as u64) << 32u64) |
+         ((bytes[offset + 5usize] as u64) << 40u64) |
+         ((bytes[offset + 6usize] as u64) << 48u64) |
+         ((bytes[offset + 7usize] as u64) << 56u64);
+}
+
+pub fn decode(frame: u8[36]): std::result::Result<Frame, FrameError> {
+  if (frame[0usize] != 67u8 || frame[1usize] != 72u8 ||
+      frame[2usize] != 84u8 || frame[3usize] != 77u8) {
+    return std::result::Result<Frame, FrameError>::Err {
+      FrameError::InvalidMagic {}
+    };
+  }
+  if (read_u16(frame, 4usize) != VERSION) {
+    return std::result::Result<Frame, FrameError>::Err {
+      FrameError::UnsupportedVersion {}
+    };
+  }
+  if (read_u32(frame, 8usize) != PAYLOAD_SIZE) {
+    return std::result::Result<Frame, FrameError>::Err {
+      FrameError::InvalidLength {}
+    };
+  }
+  return std::result::Result<Frame, FrameError>::Ok {
+    Frame {
+      .timestamp = read_u64(frame, 12usize),
+      .sensor = read_u32(frame, 20usize) as i32,
+      .value = read_u32(frame, 24usize) as i32,
+      .sequence = read_u64(frame, 28usize),
+    }
+  };
+}
+
+pub fn self_test(): i32 {
+  let frame: u8[36] = [
+    67u8, 72u8, 84u8, 77u8, 1u8, 0u8, 0u8, 0u8,
+    24u8, 0u8, 0u8, 0u8,
+    123u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+    7u8, 0u8, 0u8, 0u8,
+    253u8, 255u8, 255u8, 255u8,
+    4u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+  ];
+  let result = decode(frame);
+  return switch (result) {
+    std::result::Result<Frame, FrameError>::Ok {
+      value = move .0
+    } => {
+      if (value.timestamp != 123u64 || value.sensor != 7 ||
+          value.value != -3 || value.sequence != 4u64) { return 1; }
+      0
+    };
+    std::result::Result<Frame, FrameError>::Err { .. } => 2;
+  };
+}
+
+pub fn encode(frame: const Frame&): u8[36] {
+  var bytes: u8[36] = [
+    67u8,72u8,84u8,77u8,1u8,0u8,0u8,0u8,24u8,0u8,0u8,0u8,
+    0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,
+    0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8
+  ];
+  for (var i = 0usize; i < 8usize; i += 1usize) {
+    bytes[12usize + i] = ((frame.timestamp >> ((i * 8usize) as u64)) & 255u64) as u8;
+    bytes[28usize + i] = ((frame.sequence >> ((i * 8usize) as u64)) & 255u64) as u8;
+  }
+  for (var i = 0usize; i < 4usize; i += 1usize) {
+    bytes[20usize + i] = (((frame.sensor as u32) >> ((i * 8usize) as u32)) & 255u32) as u8;
+    bytes[24usize + i] = (((frame.value as u32) >> ((i * 8usize) as u32)) & 255u32) as u8;
+  }
+  return bytes;
+}

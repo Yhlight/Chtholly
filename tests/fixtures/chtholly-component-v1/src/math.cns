@@ -1,0 +1,21 @@
+module component::math;
+
+pub fn add(left: i32, right: i32): i32 {
+  return left + right;
+}
+
+pub fn echo_bool(value: bool): bool {
+  return value;
+}
+
+pub fn echo_f64(value: f64): f64 {
+  return value;
+}
+
+pub fn spin(iterations: u64): u64 {
+  var current = 0u64;
+  while (current < iterations) {
+    current += 1u64;
+  }
+  return current;
+}

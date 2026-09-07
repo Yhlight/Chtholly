@@ -1,0 +1,10 @@
+[package]
+name = "facade"
+language = "1.0"
+
+[build]
+entry = "src/entry.cns"
+module_paths = ["src"]
+
+[dependencies]
+base = { path = "../base" }

@@ -1,0 +1,22 @@
+module std::text;
+
+pub fn len(value: string): usize {
+  return value.len as usize;
+}
+
+pub fn is_empty(value: string): bool {
+  return value.len == 0;
+}
+
+// Produces a read-only view borrowing the string storage. The compiler-owned
+// intrinsic preserves the string pointer/length and never grants mutation or
+// ownership of the bytes.
+pub fn as_bytes(value: const string&): const slice<u8> contract {
+  borrows shared value;
+  returns borrow value;
+}
+
+// These are intentionally unsafe pointer projections for the CFDL boundary;
+// they do not extend the lifetime or transfer ownership of a slice.
+pub unsafe fn slice_data(value: const slice<u8>): const void*;
+pub unsafe fn slice_data_mut(value: slice_mut<u8>): void*;

@@ -1,0 +1,7 @@
+[package]
+name = "chtholly-foreach-runtime"
+language = "1.4"
+
+[build]
+entry = "main.cns"
+module_paths = ["."]

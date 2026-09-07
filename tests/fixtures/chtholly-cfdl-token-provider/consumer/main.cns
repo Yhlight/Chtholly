@@ -1,0 +1,23 @@
+module token_consumer;
+
+import token_provider;
+import token_wrappers;
+
+fn main(): i32 {
+  unsafe {
+    let token: token_provider::Token;
+    let status = token_wrappers::acquire_through_wrapper(token, 7);
+    if (status != 0) {
+      return status;
+    }
+    let released = token_provider::release(move token);
+    if (released != 0) {
+      return released;
+    }
+
+    let ticket: token_provider::Ticket;
+    token_provider::acquire_ticket(ticket);
+    token_provider::release_ticket(move ticket);
+    return 0;
+  }
+}

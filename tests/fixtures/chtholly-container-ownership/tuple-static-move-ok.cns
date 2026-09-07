@@ -1,0 +1,7 @@
+module tuple_static_move_ok;
+
+fn main(): i32 {
+  let pair: (i32, i32) = (10, 20);
+  let first = move pair.0;
+  return pair.1 + first;
+}

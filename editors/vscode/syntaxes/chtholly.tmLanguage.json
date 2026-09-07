@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Chtholly",
+  "scopeName": "source.chtholly",
+  "patterns": [
+    {"include": "#comments"},
+    {"include": "#strings"},
+    {"include": "#numbers"},
+    {"include": "#keywords"},
+    {"match": "\\b(fn|struct|enum|interface|impl|module)\\s+([A-Za-z_][A-Za-z0-9_]*)", "captures": {"1": {"name": "storage.type.chtholly"}, "2": {"name": "entity.name.type.chtholly"}}}
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {"name": "comment.line.double-slash.chtholly", "begin": "//", "end": "$"},
+        {"name": "comment.block.chtholly", "begin": "/\\*", "end": "\\*/"}
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {"name": "string.quoted.double.chtholly", "begin": "c?\"", "end": "\"", "patterns": [{"name": "constant.character.escape.chtholly", "match": "\\\\[\\\\\"'0nrt]"}]},
+        {"name": "string.quoted.single.chtholly", "begin": "'", "end": "'", "patterns": [{"name": "constant.character.escape.chtholly", "match": "\\\\[\\\\\"'0nrt]"}]}
+      ]
+    },
+    "numbers": {"patterns": [{"name": "constant.numeric.chtholly", "match": "\\b(?:0[xX][0-9A-Fa-f](?:_?[0-9A-Fa-f])*|0[bB][01](?:_?[01])*|[0-9](?:_?[0-9])*)(?:i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64)?\\b"}]},
+    "keywords": {"patterns": [{"name": "keyword.control.chtholly", "match": "\\b(?:as|break|const|continue|defer|do|else|export|false|for|if|import|let|match|move|null|pub|return|static|switch|true|unsafe|var|while)\\b"}, {"name": "storage.type.primitive.chtholly", "match": "\\b(?:bool|f32|f64|i8|i16|i32|i64|isize|never|string|u8|u16|u32|u64|usize|void)\\b"}]}
+  }
+}

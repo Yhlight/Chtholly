@@ -1,0 +1,7 @@
+[package]
+name = "probe"
+language = "1.2"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]

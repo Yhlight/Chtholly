@@ -1,0 +1,3 @@
+module test_control;
+
+foreign fn chtholly_next_runtime_v1_testing_set_allocation_limit(bytes: u64) -> void;

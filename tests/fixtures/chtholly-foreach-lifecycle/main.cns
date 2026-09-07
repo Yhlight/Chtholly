@@ -1,0 +1,100 @@
+module main;
+
+import std::vec;
+import test_control;
+
+lifecycle(copy = delete, move = default, drop = custom)
+struct Tracker {
+  pub value: i32;
+}
+
+impl Tracker {
+  fn drop(self: Tracker&): void {
+    unsafe {
+      test_control::chtholly_next_runtime_v1_testing_lifecycle_drop();
+    }
+    return;
+  }
+}
+
+fn tracker(value: i32): Tracker {
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_construct();
+  }
+  return Tracker { .value = value };
+}
+
+fn normal_cleanup(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(1));
+  values.push(tracker(2));
+  var sum = 0;
+  foreach (let item: const Tracker& in values.iter()) {
+    sum = sum + item.value;
+  }
+  return sum;
+}
+
+fn break_cleanup(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(3));
+  values.push(tracker(4));
+  foreach (let item: const Tracker& in values.iter()) {
+    if (item.value != 3) { return 1; }
+    break;
+  }
+  return 0;
+}
+
+fn continue_cleanup(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(5));
+  values.push(tracker(6));
+  var sum = 0;
+  foreach (let item: const Tracker& in values.iter()) {
+    if (item.value == 5) { continue; }
+    sum = sum + item.value;
+  }
+  return sum;
+}
+
+fn return_cleanup(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(7));
+  values.push(tracker(8));
+  foreach (let item: const Tracker& in values.iter()) {
+    if (item.value == 8) { return item.value; }
+  }
+  return 0;
+}
+
+fn expect_counts(expected: u64): i32 {
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_construct_count() != expected) {
+      return 1;
+    }
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != expected) {
+      return 2;
+    }
+  }
+  return 0;
+}
+
+fn main(): i32 {
+  unsafe { test_control::chtholly_next_runtime_v1_testing_lifecycle_reset(); }
+  if (normal_cleanup() != 3) { return 1; }
+  if (expect_counts(2u64) != 0) { return 2; }
+
+  unsafe { test_control::chtholly_next_runtime_v1_testing_lifecycle_reset(); }
+  if (break_cleanup() != 0) { return 3; }
+  if (expect_counts(2u64) != 0) { return 4; }
+
+  unsafe { test_control::chtholly_next_runtime_v1_testing_lifecycle_reset(); }
+  if (continue_cleanup() != 6) { return 5; }
+  if (expect_counts(2u64) != 0) { return 6; }
+
+  unsafe { test_control::chtholly_next_runtime_v1_testing_lifecycle_reset(); }
+  if (return_cleanup() != 8) { return 7; }
+  if (expect_counts(2u64) != 0) { return 8; }
+  return 0;
+}

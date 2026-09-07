@@ -1,0 +1,7 @@
+[package]
+name = "error-smoke"
+language = "1.10"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]

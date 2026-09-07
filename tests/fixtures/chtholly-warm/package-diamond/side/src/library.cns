@@ -1,0 +1,5 @@
+module side;
+
+pub fn marker(): i32 {
+  return 0;
+}

@@ -1,0 +1,10 @@
+module vec_shared_iterator_read;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  let iterator = values.iter();
+  let length = values.len();
+  let advanced = (move iterator).next();
+  return 0;
+}

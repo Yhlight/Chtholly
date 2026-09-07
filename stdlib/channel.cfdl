@@ -1,0 +1,21 @@
+module std::channel;
+
+// A bounded byte channel. Typed values require compiler-owned move/drop and
+// Send/Sync witnesses and are intentionally not represented by this boundary.
+foreign type Channel: void* invalid null;
+
+foreign fn channel_init(capacity: u64, channel: out Channel) -> i32
+link "chtholly_next_host_v1_channel_init"
+where channel obliges channel_close;
+
+foreign fn channel_send(channel: ref_mut Channel, data: view const void*, size: u64)
+    -> i32
+link "chtholly_next_host_v1_channel_send_ref";
+
+foreign fn channel_receive(channel: ref_mut Channel, buffer: view_mut void*,
+                   capacity: u64, size: out u64) -> i32
+link "chtholly_next_host_v1_channel_receive_ref";
+
+foreign fn channel_close(channel: move Channel) -> i32
+link "chtholly_next_host_v1_channel_close"
+where channel discharges channel_close;

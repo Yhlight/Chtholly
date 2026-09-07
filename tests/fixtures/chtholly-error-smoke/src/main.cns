@@ -1,0 +1,49 @@
+module main;
+
+import std::error;
+import std::hash;
+
+const fn wrap_constant(): u64 {
+  return std::hash::wrapping_mul(18_446_744_073_709_551_615u64, 2u64);
+}
+
+fn main(): i32 {
+  let small_value = 5i8;
+  let error = std::error::from_errno(5i32);
+  let sync_error = std::error::from_sync(7i32);
+  let timeout_error = std::error::from_timeout(-2804i32);
+  let cancelled_error = std::error::from_cancelled(-2705i32);
+  let invalid_handle = std::error::from_errno(-2704i32);
+  let out_of_memory = std::error::from_errno(-2703i32);
+  let digest = std::hash::hash_value(&small_value, 17u64);
+  if (!std::hash::equal_value(&error.code, &error.code)) { return 3; }
+  let wide_value = 5u64;
+  let letter_value = 'A';
+  let flag_value = true;
+  let float32_value = 1.5f32;
+  let float64_value = -0.0f64;
+  let pointer_value: u8* = null;
+  let wide = std::hash::hash_value(&wide_value, 17u64);
+  let letter = std::hash::hash_value(&letter_value, 17u64);
+  let flag = std::hash::hash_value(&flag_value, 17u64);
+  let float32_hash = std::hash::hash_value(&float32_value, 17u64);
+  let float64_hash = std::hash::hash_value(&float64_value, 17u64);
+  let pointer_hash = std::hash::hash_value(&pointer_value, 17u64);
+  let wrapped = wrap_constant();
+  if (!std::hash::equal_value(&float32_value, &float32_value) ||
+      !std::hash::equal_value(&float64_value, &float64_value) ||
+      !std::hash::equal_value(&pointer_value, &pointer_value) ||
+      digest == 0u64 || wide == 0u64 || letter == 0u64 || flag == 0u64 ||
+      float32_hash == 0u64 || float64_hash == 0u64 || pointer_hash == 0u64 ||
+      wrapped != 18_446_744_073_709_551_614u64) {
+    return 4;
+  }
+  if (digest == 0u64) { return 2; }
+  if (std::error::is_timeout(&error)) { return 1; }
+  if (!std::error::is_sync(&sync_error) ||
+      !std::error::is_timeout(&timeout_error) ||
+      !std::error::is_cancelled(&cancelled_error) ||
+      !std::error::is_invalid_handle(&invalid_handle) ||
+      !std::error::is_out_of_memory(&out_of_memory)) { return 1; }
+  return error.code;
+}

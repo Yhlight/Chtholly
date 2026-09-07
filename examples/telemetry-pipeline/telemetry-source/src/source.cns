@@ -1,0 +1,30 @@
+module telemetry::source;
+
+import std::iter;
+
+pub struct SampleIterator {
+  current: i32;
+  end: i32;
+}
+
+pub fn samples(count: i32): SampleIterator {
+  return SampleIterator { .current = 0, .end = count };
+}
+
+impl std::iter::Iterator for SampleIterator {
+  alias Item = i32;
+
+  fn next(self: Self): std::iter::IterationStep<i32, Self> {
+    if (self.current < self.end) {
+      let value = self.current % 100;
+      let continuation = SampleIterator {
+        .current = self.current + 1,
+        .end = self.end,
+      };
+      return std::iter::IterationStep<i32, Self>::Item {
+        value, move continuation
+      };
+    }
+    return std::iter::IterationStep<i32, Self>::Done {};
+  }
+}

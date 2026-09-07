@@ -1,0 +1,8 @@
+module main;
+
+import std::vec;
+
+fn main(): i32 {
+  let values = std::vec::Vec<i32>::init();
+  return values.at(0usize);
+}

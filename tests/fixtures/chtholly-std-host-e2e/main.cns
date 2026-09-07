@@ -1,0 +1,59 @@
+module main;
+
+import std::host;
+
+fn main(): i32 {
+  unsafe {
+    var handle: std::host::Handle;
+    let opened = std::host::host_open(
+        c"chtholly-host-e2e.tmp", 21u64, handle);
+    if (opened != 0) {
+      return 10;
+    }
+    let written = std::host::host_write(&handle, c"next-host", 9u64);
+    if (written != 9i64) {
+      return 11;
+    }
+    let read = std::host::host_read(&handle, null, 0u64);
+    if (read != 0i64) {
+      return 12;
+    }
+    if (std::host::host_close(move handle) != 0) {
+      return 13;
+    }
+
+    let failed_handle: std::host::Handle;
+    if (std::host::host_open(null, 0u64, failed_handle) != -2701) {
+      return 14;
+    }
+
+    let instant: std::host::Instant;
+    if (std::host::monotonic_now(instant) != 0) {
+      return 20;
+    }
+
+    var task: std::host::TaskHandle;
+    if (std::host::task_spawn(c"task", task) != 0) {
+      return 30;
+    }
+    if (std::host::task_poll(&task) != -2706) {
+      return 31;
+    }
+    if (std::host::task_wake(&task) != 0) {
+      return 32;
+    }
+    if (std::host::task_poll(&task) != 0) {
+      return 33;
+    }
+    if (std::host::task_cancel(&task) != 0) {
+      return 34;
+    }
+    if (std::host::task_wake(&task) != -2705) {
+      return 35;
+    }
+    if (std::host::task_join(move task) != -2705) {
+      return 36;
+    }
+  }
+  return 0;
+}

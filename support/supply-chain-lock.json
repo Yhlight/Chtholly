@@ -1,0 +1,19 @@
+{
+  "schema": "chtholly-supply-chain-lock-v1",
+  "github_actions": {
+    "actions/cache": "0057852bfaa89a56745cba8c7296529d2fc39830",
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/download-artifact": "d3f86a106a0bac45b974a628896c90dbdf5c8093",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "ilammy/msvc-dev-cmd": "0b201ec74fa43914dc39ae48a89fd1d8cb592756"
+  },
+  "vcpkg": {
+    "commit": "9d7f79f56ae1a9b4704d6a7fb8237e347a974133"
+  },
+  "llvm": {
+    "version": "18.1.8",
+    "release_tag": "llvmorg-18.1.8",
+    "source_commit": "76caf4176cd7877ad5952737d56da6f515ee4602",
+    "artifact_url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/clang%2Bllvm-18.1.8-x86_64-pc-windows-msvc.tar.xz"
+  }
+}

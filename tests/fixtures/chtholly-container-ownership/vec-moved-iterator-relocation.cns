@@ -1,0 +1,11 @@
+module vec_moved_iterator_relocation;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  let iterator = values.iter();
+  let moved = move iterator;
+  values.clear();
+  let advanced = (move moved).next();
+  return 0;
+}

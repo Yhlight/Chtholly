@@ -1,0 +1,12 @@
+module initialize_twice;
+
+import token_provider;
+
+fn main(): i32 {
+  unsafe {
+    let token: token_provider::Token;
+    token_provider::acquire(token);
+    token_provider::acquire(token);
+    return token_provider::release(move token);
+  }
+}

@@ -1,0 +1,94 @@
+// Negative tests for structured destructuring assignment
+// These should all produce compile errors
+
+module test;
+
+struct Pair {
+  pub x: i32;
+  pub y: i32;
+}
+
+// Error Test 1: Duplicate target in pattern
+fn test_duplicate_target(): void {
+  var x: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // ERROR: x assigned twice
+  { x = copy .x, x = copy .y } = p;
+  // expected-error@-1 {{duplicate name in pattern}}
+}
+
+// Error Test 2: Assignment to immutable variable
+fn test_immutable_target(): void {
+  let x: i32 = 0;  // immutable
+  var y: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // ERROR: x is immutable
+  { x = copy .x, y = copy .y } = p;
+  // expected-error@-1 {{assignment to immutable place}}
+}
+
+// Error Test 3: Unknown target name
+fn test_unknown_target(): void {
+  var x: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // ERROR: z is not declared
+  { x = copy .x, z = copy .y } = p;
+  // expected-error@-1 {{unknown name}}
+}
+
+// Error Test 4: Type mismatch in assignment
+fn test_type_mismatch(): void {
+  var x: bool = false;
+  var y: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // ERROR: x is bool, .x is i32
+  { x = copy .x, y = copy .y } = p;
+  // expected-error@-1 {{type mismatch}}
+}
+
+// Error Test 5: Overlapping pattern paths
+fn test_overlapping_paths(): void {
+  var x: i32 = 0;
+  var y: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // ERROR: .x accessed twice
+  { x = copy .x, y = move .x } = p;
+  // expected-error@-1 {{overlapping pattern binding}}
+}
+
+// Error Test 6: Incomplete coverage without rest
+struct Triple {
+  pub a: i32;
+  pub b: i32;
+  pub c: i32;
+}
+
+fn test_incomplete_coverage(): void {
+  var a: i32 = 0;
+  var b: i32 = 0;
+  let t = Triple { .a = 1, .b = 2, .c = 3 };
+
+  // ERROR: missing .c and no ..
+  { a = copy .a, b = copy .b } = t;
+  // expected-error@-1 {{incomplete pattern coverage}}
+}
+
+// Error Test 7: Slice destructuring (not admitted in v1)
+fn test_slice_destructuring(): void {
+  var x: i32 = 0;
+  let arr: i32[3] = [1, 2, 3];
+  let s = arr[..];
+
+  // ERROR: slice destructuring not supported
+  { x = copy .0 } = s;
+  // expected-error@-1 {{slice destructuring not supported}}
+}
+
+fn main(): i32 {
+  return 0;
+}

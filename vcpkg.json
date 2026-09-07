@@ -1,0 +1,29 @@
+{
+  "name": "chtholly",
+  "version-string": "0.1.0-preview",
+  "dependencies": [
+    {
+      "name": "cpp-httplib",
+      "default-features": false,
+      "features": ["openssl"]
+    },
+    "libsodium",
+    "openssl",
+    {
+      "name": "sqlite3",
+      "default-features": false
+    },
+    {
+      "name": "curl",
+      "default-features": false,
+      "features": ["ssl"],
+      "platform": "windows"
+    },
+    {
+      "name": "curl",
+      "default-features": false,
+      "features": ["openssl"],
+      "platform": "!windows"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+module vec_api_load;
+import std::vec;
+import std::option;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.reserve(2usize);
+  values.push(7);
+  values.push(9);
+  if (values.len() != 2usize) { return 1; }
+  if (values.capacity() < 2usize) { return 2; }
+  let removed = values.remove(0usize);
+  if (removed.is_none()) { return 3; }
+  if ((move removed).unwrap() != 7) { return 4; }
+  let popped = values.pop();
+  if (!popped.is_some()) { return 5; }
+  if ((move popped).unwrap() != 9) { return 6; }
+  let empty = values.pop();
+  if (empty.is_some()) { return 7; }
+  values.clear();
+  return 0;
+}

@@ -1,0 +1,51 @@
+module std::typed_channel;
+
+import std::error;
+import std::result;
+
+// API epoch 2: payload type is part of the concrete specific identity.
+
+// Compiler-owned generic facade. Channel<T> is an opaque runtime handle; the
+// payload type is retained by the generic specific and used to select the
+// typed descriptor and lifecycle witnesses. The declarations are intentionally
+// bodyless and are implemented by the channel.* intrinsic path. The sole
+// field is the runtime handle; T remains in the nominal specialization so the
+// descriptor lookup cannot erase the payload type.
+lifecycle(copy = delete, move = default, drop = custom)
+pub struct Channel<T> {
+  handle: u8*;
+}
+
+pub struct SendError<T> {
+  pub error: std::error::ErrorCode;
+  pub value: T;
+}
+
+impl<T> Channel<T> {
+  pub fn empty(): Channel<T> {
+    return Channel<T> { .handle = null };
+  }
+
+  pub fn init(self: Self&, capacity: u64):
+      std::result::Result<void, std::error::ErrorCode> contract {
+    writes self;
+  }
+
+  pub fn send(self: Self&, value: T):
+      std::result::Result<void, SendError<T> > contract {
+    writes self;
+    takes value;
+  }
+  pub fn receive(self: Self&):
+      std::result::Result<T, std::error::ErrorCode> contract {
+    writes self;
+  }
+  pub fn close(self: Self):
+      std::result::Result<void, std::error::ErrorCode> contract {
+    writes self;
+  }
+}
+
+impl<T> Channel<T> {
+  pub fn drop(self: Self&): void contract {}
+}

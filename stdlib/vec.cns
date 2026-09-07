@@ -1,0 +1,101 @@
+module std::vec;
+
+import std::iter;
+import std::option;
+
+// A Vec owns a contiguous allocation. Element references and iterators borrow
+// the owner and are invalid after a potentially relocating operation.
+lifecycle(copy = delete, move = default, drop = custom)
+pub struct Vec<T> {
+  data: T*;
+  length: usize;
+  allocation_capacity: usize;
+}
+
+pub struct VecIterator<T> {
+  owner: const Vec<T>&;
+  index: usize;
+}
+
+pub struct VecMutIterator<T> {
+  owner: Vec<T>&;
+  index: usize;
+}
+
+pub alias VecIterStep<T> =
+    std::iter::IterationStep<const T&, VecIterator<T> >;
+pub alias VecMutIterStep<T> =
+    std::iter::IterationStep<T&, VecMutIterator<T> >;
+
+impl<T> Vec<T> {
+  pub fn init(): Vec<T> contract {}
+
+  pub fn len(self: const Vec<T>&): usize contract {
+    reads self;
+  }
+
+  pub fn capacity(self: const Vec<T>&): usize contract {
+    reads self;
+  }
+
+  // Structural writes conservatively model possible relocation.
+  pub fn reserve(self: Vec<T>&, additional: usize): void contract {
+    writes self;
+  }
+
+  pub fn push(self: Vec<T>&, value: T): void contract {
+    writes self;
+  }
+
+  pub fn at(self: const Vec<T>&, index: usize): const T& contract {
+    borrows shared self;
+    returns borrow self;
+  }
+
+  pub fn at_mut(self: Vec<T>&, index: usize): T& contract {
+    borrows mutable self;
+    returns borrow self;
+  }
+
+  pub fn pop(self: Vec<T>&): std::option::Option<T> contract {
+    writes self;
+  }
+
+  pub fn remove(self: Vec<T>&, index: usize): std::option::Option<T> contract {
+    writes self;
+  }
+
+  pub fn clear(self: Vec<T>&): void contract {
+    writes self;
+  }
+
+  pub fn iter(self: const Vec<T>&): VecIterator<T> contract {
+    borrows shared self;
+    returns borrow self;
+  }
+
+  pub fn iter_mut(self: Vec<T>&): VecMutIterator<T> contract {
+    borrows mutable self;
+    returns borrow self;
+  }
+}
+
+impl<T> Vec<T> {
+  pub fn drop(self: Vec<T>&): void contract {}
+}
+
+impl<T> std::iter::Iterator for VecIterator<T> {
+  alias Item = const T&;
+  pub fn next(self: VecIterator<T>): VecIterStep<T> contract {
+    takes self;
+    returns borrow self;
+  }
+}
+
+impl<T> std::iter::Iterator for VecMutIterator<T> {
+  alias Item = T&;
+  pub fn next(self: VecMutIterator<T>): VecMutIterStep<T> contract {
+    takes self;
+    returns borrow self;
+  }
+}

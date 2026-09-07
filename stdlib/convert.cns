@@ -1,0 +1,7 @@
+module std::convert;
+
+pub enum CastError {
+  Inexact,
+  OutOfRange,
+  NonFinite,
+}

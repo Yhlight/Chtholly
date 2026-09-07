@@ -1,0 +1,21 @@
+// Mechanical declarations originate from the CFFI projection of the small
+// native adapter. Resource and error clauses are the reviewed overlay.
+module sqlite;
+
+foreign type Database: void* invalid null;
+
+foreign fn chtholly_sqlite_version() -> c_int
+link "chtholly_sqlite_version" call c;
+
+foreign fn chtholly_sqlite_open_memory() -> owned Database
+link "chtholly_sqlite_open_memory" call c
+where result obliges chtholly_sqlite_close;
+
+foreign fn chtholly_sqlite_close(database: move Database) -> c_int
+link "chtholly_sqlite_close" call c
+where database discharges chtholly_sqlite_close
+error code when result != 0;
+
+foreign fn chtholly_sqlite_open_invalid() -> c_int
+link "chtholly_sqlite_open_invalid" call c
+error code when result != 0;

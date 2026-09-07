@@ -1,0 +1,232 @@
+module std::collections;
+
+import std::error;
+import std::hash;
+import std::iter;
+import std::option;
+import std::result;
+import std::vec;
+
+pub trait Collection {
+  alias Iterator;
+
+  fn items(self: const Self&): Self::Iterator contract {
+    borrows shared self;
+    returns borrow self;
+  }
+}
+
+pub trait Collector<Item> {
+  alias Output;
+
+  fn push(self: Self&, item: Item): void;
+  fn finish(self: Self): Output;
+}
+
+pub struct VecView<T> {
+  values: const std::vec::Vec<T>&;
+}
+
+pub fn view<T>(values: const std::vec::Vec<T>&): VecView<T> {
+  return VecView<T> { .values = values };
+}
+
+impl<T> Collection for VecView<T> {
+  alias Iterator = std::vec::VecIterator<T>;
+
+  fn items(self: const Self&): std::vec::VecIterator<T> {
+    return self.values.iter();
+  }
+}
+
+pub struct VecCollector<T> {
+  values: std::vec::Vec<T>;
+}
+
+pub fn vec_collector<T>(values: std::vec::Vec<T>): VecCollector<T> {
+  return VecCollector<T> { .values = move values };
+}
+
+impl<T> Collector<T> for VecCollector<T> {
+  alias Output = std::vec::Vec<T>;
+
+  fn push(self: Self&, item: T): void {
+    self.values.push(move item);
+  }
+
+  fn finish(self: Self): std::vec::Vec<T> {
+    return move self.values;
+  }
+}
+
+pub fn collect<I, C>(iterator: I, collector: C): C::Output
+    where I: std::iter::Iterator,
+          C: Collector<I::Item> {
+  var remaining = move iterator;
+  var state = move collector;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => {
+        return (move state).finish();
+      };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        state.push(move item);
+        continue;
+      };
+    };
+  }
+}
+
+pub enum BucketState {
+  Empty,
+  Occupied,
+  Deleted,
+}
+
+pub struct HashBucket<K, V> {
+  pub state: BucketState;
+  pub hash: u64;
+  pub key: std::option::Option<K>;
+  pub value: std::option::Option<V>;
+}
+
+lifecycle(copy = delete, move = default, drop = custom)
+pub struct HashMap<K, V> {
+  storage: u8*;
+  length: usize;
+  allocation_capacity: usize;
+  deleted: usize;
+  seed: u64;
+  generation: u64;
+}
+
+impl<K, V> HashMap<K, V> {
+  pub fn make(): HashMap<K, V> contract {}
+
+  pub fn len(self: const HashMap<K, V>&): usize contract {}
+
+  pub fn capacity(self: const HashMap<K, V>&): usize contract {}
+
+  pub fn is_empty(self: const HashMap<K, V>&): bool contract {}
+
+  pub fn with_capacity(capacity: usize):
+      std::result::Result<HashMap<K, V>, std::error::ErrorCode> {
+    var result = HashMap<K, V>::make();
+    let reserve_status = result.reserve(capacity);
+    return switch (move reserve_status) {
+      std::result::Result<void, std::error::ErrorCode>::Ok { .. } =>
+        std::result::Result<HashMap<K, V>, std::error::ErrorCode>::Ok {
+          move result
+        };
+      std::result::Result<void, std::error::ErrorCode>::Err { error = move .0 } =>
+        std::result::Result<HashMap<K, V>, std::error::ErrorCode>::Err {
+          move error
+        };
+    };
+  }
+
+  pub fn contains(self: const HashMap<K, V>&, key: const K&): bool
+      where K: std::hash::Hash,
+            K: std::hash::Equal<K> contract {}
+
+  pub fn get(self: const HashMap<K, V>&, key: const K&):
+      std::option::Option<const V&>
+      where K: std::hash::Hash,
+            K: std::hash::Equal<K> contract {
+    borrows shared self;
+    returns borrow self;
+  }
+
+  pub fn get_mut(self: HashMap<K, V>&, key: const K&):
+      std::option::Option<V&>
+      where K: std::hash::Hash,
+            K: std::hash::Equal<K> contract {
+    borrows mutable self;
+    returns borrow self;
+  }
+
+  pub fn remove(self: HashMap<K, V>&, key: const K&):
+      std::option::Option<V>
+      where K: std::hash::Hash,
+            K: std::hash::Equal<K> contract {}
+
+  pub fn insert(self: HashMap<K, V>&, key: K, value: V):
+      std::result::Result<std::option::Option<V>, std::error::ErrorCode>
+      where K: std::hash::Hash,
+            K: std::hash::Equal<K> contract {}
+
+  pub fn reserve(self: HashMap<K, V>&, additional: usize):
+      std::result::Result<void, std::error::ErrorCode> contract {
+    writes self;
+  }
+
+  pub fn clear(self: HashMap<K, V>&): void contract {
+    writes self;
+  }
+}
+
+pub fn new_hash_map<K, V>(): HashMap<K, V> {
+  return HashMap<K, V>::make();
+}
+
+impl<K, V> HashMap<K, V> {
+  pub fn drop(self: HashMap<K, V>&): void contract {}
+}
+
+ lifecycle(copy = delete, move = default, drop = custom)
+pub struct HashSet<T> {
+  storage: u8*;
+  length: usize;
+  allocation_capacity: usize;
+  seed: u64;
+  generation: u64;
+}
+
+impl<T> HashSet<T> {
+  pub fn make(): HashSet<T> contract {}
+
+  pub fn len(self: const HashSet<T>&): usize contract {}
+
+  pub fn capacity(self: const HashSet<T>&): usize contract {}
+
+  pub fn is_empty(self: const HashSet<T>&): bool contract {}
+
+  pub fn contains(self: const HashSet<T>&, value: const T&): bool
+      where T: std::hash::Hash,
+            T: std::hash::Equal<T> contract {}
+
+  pub fn insert(self: HashSet<T>&, value: T):
+      std::result::Result<bool, std::error::ErrorCode>
+      where T: std::hash::Hash,
+            T: std::hash::Equal<T> contract {
+    writes self;
+  }
+
+  pub fn remove(self: HashSet<T>&, value: const T&): bool
+      where T: std::hash::Hash,
+            T: std::hash::Equal<T> contract {
+    writes self;
+  }
+
+  pub fn reserve(self: HashSet<T>&, additional: usize):
+      std::result::Result<void, std::error::ErrorCode> contract {
+    writes self;
+  }
+
+  pub fn clear(self: HashSet<T>&): void contract {
+    writes self;
+  }
+}
+
+pub fn new_hash_set<T>(): HashSet<T> {
+  return HashSet<T>::make();
+}
+
+impl<T> HashSet<T> {
+  pub fn drop(self: HashSet<T>&): void contract {}
+}

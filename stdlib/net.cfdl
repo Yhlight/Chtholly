@@ -1,0 +1,27 @@
+module std::net::raw;
+
+// The first network surface is deliberately synchronous and loopback-bound.
+// Handles are opaque move-only foreign resources; callers must discharge them
+// with net_close. Reads return a byte count, zero for EOF, or a negative
+// std::error-compatible host status.
+foreign type Socket: void* invalid null;
+
+foreign fn listen(port: u16, listener: out Socket) -> i32
+link "chtholly_next_host_v1_net_listen"
+where listener obliges net_close;
+
+foreign fn accept(listener: ref_mut Socket, stream: out Socket) -> i32
+link "chtholly_next_host_v1_net_accept_ref"
+where stream obliges net_close;
+
+foreign fn read(stream: ref_mut Socket, buffer: view_mut void*, capacity: u64)
+    -> i64
+link "chtholly_next_host_v1_net_read_ref";
+
+foreign fn write(stream: ref_mut Socket, buffer: view const void*, size: u64)
+    -> i64
+link "chtholly_next_host_v1_net_write_ref";
+
+foreign fn close(handle: move Socket) -> i32
+link "chtholly_next_host_v1_net_close"
+where handle discharges net_close;

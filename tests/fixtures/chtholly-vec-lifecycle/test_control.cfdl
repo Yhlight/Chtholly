@@ -1,0 +1,8 @@
+module test_control;
+
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_reset() -> void;
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_construct() -> void;
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_drop() -> void;
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_expect_drops(count: u64) -> void;
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_construct_count() -> u64;
+foreign fn chtholly_next_runtime_v1_testing_lifecycle_drop_count() -> u64;

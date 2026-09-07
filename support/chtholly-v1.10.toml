@@ -1,0 +1,30 @@
+schema = "chtholly-language-surface-v3"
+release = "1.10"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.9.toml"
+evidence_matrix = "support/chtholly-feature-evidence.toml"
+
+normative_specs = ["docs/spec/v1.10-language-roadmap.md"]
+
+[[feature]]
+id = "wide-slice-indexing"
+title = "u64 slice lengths, indices, bounds, and checked indexing"
+scope = "v1.10"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.10-language-roadmap.md#wide-slice-semantics"
+tokens = ["LBracket", "RBracket"]
+nodes = ["IndexExpr", "SliceStart", "SliceEnd", "SliceExpr"]
+evidence = ["tests/chtholly_language_version_tests.py", "tests/chtholly_cffi_tool_tests.py"]
+
+[[feature]]
+id = "typed-channels"
+title = "Result-based generic Channel<T> with compiler-owned lifecycle"
+scope = "v1.10"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/language-surface.md#typed-channels"
+tokens = []
+nodes = ["FunctionDecl", "GenericType", "CallExpr", "MemberExpr", "ContractEffectEntry", "ContractPostconditionEntry"]
+evidence = ["tests/chtholly_semantic_support_tests.cpp", "tests/chtholly_host_runtime_tests.cpp", "examples/telemetry-pipeline/app/src/pipeline.cns"]

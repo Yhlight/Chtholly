@@ -1,0 +1,6 @@
+module probe;
+import provider;
+
+fn main(): i32 {
+  return provider::apply(7);
+}

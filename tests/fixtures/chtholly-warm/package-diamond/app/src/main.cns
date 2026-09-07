@@ -1,0 +1,7 @@
+module app;
+import facade;
+import side;
+
+fn main(): i32 {
+  return facade::relay(facade::identity(42)) + side::marker();
+}

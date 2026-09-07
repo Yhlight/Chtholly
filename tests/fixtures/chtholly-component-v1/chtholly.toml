@@ -1,0 +1,11 @@
+[package]
+name = "component_fixture"
+language = "1.9"
+
+[build]
+module_paths = ["src"]
+
+[component]
+abi = 1
+identity = "org.chtholly.tests.component-v1"
+exports = ["component::bytes::probe", "component::math::add", "component::math::echo_bool", "component::math::echo_f64", "component::math::spin"]

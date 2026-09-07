@@ -1,0 +1,372 @@
+module std::time;
+
+import std::result;
+
+const fn nanoseconds_per_second(): u32 { return 1_000_000_000u32; }
+const fn nanoseconds_per_second_signed(): i64 { return 1_000_000_000i64; }
+const fn i64_max_as_u64(): u64 { return 9_223_372_036_854_775_807u64; }
+const fn i64_min_magnitude(): u64 { return 9_223_372_036_854_775_808u64; }
+const fn u64_max(): u64 { return 18_446_744_073_709_551_615u64; }
+
+repr(C) pub struct Duration {
+  whole_seconds: i64;
+  subsecond_nanoseconds: u32;
+  reserved: u32;
+}
+
+repr(C) pub struct Instant {
+  whole_seconds: u64;
+  subsecond_nanoseconds: u32;
+  reserved: u32;
+}
+
+const fn duration_from_fractional(
+    seconds: i64, fractional_nanoseconds: i64): Duration {
+  if (fractional_nanoseconds < 0i64) {
+    return Duration {
+      .whole_seconds = seconds - 1i64,
+      .subsecond_nanoseconds =
+          (fractional_nanoseconds + nanoseconds_per_second_signed()) as u32,
+      .reserved = 0u32,
+    };
+  }
+  return Duration {
+    .whole_seconds = seconds,
+    .subsecond_nanoseconds = fractional_nanoseconds as u32,
+    .reserved = 0u32,
+  };
+}
+
+const fn duration_from_subsecond_units(
+    value: i64, units_per_second: i64,
+    nanoseconds_per_unit: i64): Duration {
+  let seconds = value / units_per_second;
+  let remainder = value % units_per_second;
+  return duration_from_fractional(
+      seconds, remainder * nanoseconds_per_unit);
+}
+
+const fn add_signed_seconds(
+    base: u64, offset: i64, carry: bool): u64 {
+  if (offset >= 0i64) {
+    let result = base + (offset as u64);
+    if (carry) {
+      return result + 1u64;
+    }
+    return result;
+  }
+
+  if (carry) {
+    let magnitude = (0i64 - (offset + 1i64)) as u64;
+    return base - magnitude;
+  }
+  let magnitude = ((0i64 - (offset + 1i64)) as u64) + 1u64;
+  return base - magnitude;
+}
+
+const fn subtract_signed_seconds(
+    base: u64, offset: i64, borrow: bool): u64 {
+  if (offset >= 0i64) {
+    let result = base - (offset as u64);
+    if (borrow) {
+      return result - 1u64;
+    }
+    return result;
+  }
+
+  if (borrow) {
+    let magnitude = (0i64 - (offset + 1i64)) as u64;
+    return base + magnitude;
+  }
+  let magnitude = ((0i64 - (offset + 1i64)) as u64) + 1u64;
+  return base + magnitude;
+}
+
+const fn trap_duration_overflow(excess: u64): i64 {
+  return (u64_max() + excess) as i64;
+}
+
+impl Duration {
+  pub const fn zero(): Duration {
+    return Duration {
+      .whole_seconds = 0i64,
+      .subsecond_nanoseconds = 0u32,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn nanoseconds(value: i64): Duration {
+    return duration_from_subsecond_units(
+        value, nanoseconds_per_second_signed(), 1i64);
+  }
+
+  pub const fn microseconds(value: i64): Duration {
+    return duration_from_subsecond_units(value, 1_000_000i64, 1_000i64);
+  }
+
+  pub const fn milliseconds(value: i64): Duration {
+    return duration_from_subsecond_units(value, 1_000i64, 1_000_000i64);
+  }
+
+  pub const fn seconds(value: i64): Duration {
+    return Duration {
+      .whole_seconds = value,
+      .subsecond_nanoseconds = 0u32,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn minutes(value: i64): Duration {
+    return Duration::seconds(value * 60i64);
+  }
+
+  pub const fn hours(value: i64): Duration {
+    return Duration::seconds(value * 3_600i64);
+  }
+
+  pub const fn add(
+      self: const Duration&, other: const Duration&): Duration {
+    let nanoseconds =
+        self.subsecond_nanoseconds + other.subsecond_nanoseconds;
+    if (nanoseconds >= nanoseconds_per_second()) {
+      let normalized_nanoseconds = nanoseconds - nanoseconds_per_second();
+      if (other.whole_seconds < 0i64) {
+        return Duration {
+          .whole_seconds = self.whole_seconds + (other.whole_seconds + 1i64),
+          .subsecond_nanoseconds = normalized_nanoseconds,
+          .reserved = 0u32,
+        };
+      }
+      return Duration {
+        .whole_seconds =
+            (self.whole_seconds + other.whole_seconds) + 1i64,
+        .subsecond_nanoseconds = normalized_nanoseconds,
+        .reserved = 0u32,
+      };
+    }
+    return Duration {
+      .whole_seconds = self.whole_seconds + other.whole_seconds,
+      .subsecond_nanoseconds = nanoseconds,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn subtract(
+      self: const Duration&, other: const Duration&): Duration {
+    if (self.subsecond_nanoseconds < other.subsecond_nanoseconds) {
+      let nanoseconds =
+          (self.subsecond_nanoseconds + nanoseconds_per_second()) -
+          other.subsecond_nanoseconds;
+      if (other.whole_seconds <= 0i64) {
+        return Duration {
+          .whole_seconds =
+              self.whole_seconds - (other.whole_seconds + 1i64),
+          .subsecond_nanoseconds = nanoseconds,
+          .reserved = 0u32,
+        };
+      }
+      return Duration {
+        .whole_seconds =
+            (self.whole_seconds - other.whole_seconds) - 1i64,
+        .subsecond_nanoseconds = nanoseconds,
+        .reserved = 0u32,
+      };
+    }
+    return Duration {
+      .whole_seconds = self.whole_seconds - other.whole_seconds,
+      .subsecond_nanoseconds =
+          self.subsecond_nanoseconds - other.subsecond_nanoseconds,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn negated(self: const Duration&): Duration {
+    if (self.subsecond_nanoseconds == 0u32) {
+      return Duration {
+        .whole_seconds = 0i64 - self.whole_seconds,
+        .subsecond_nanoseconds = 0u32,
+        .reserved = 0u32,
+      };
+    }
+    if (self.whole_seconds < 0i64) {
+      return Duration {
+        .whole_seconds = 0i64 - (self.whole_seconds + 1i64),
+        .subsecond_nanoseconds =
+            nanoseconds_per_second() - self.subsecond_nanoseconds,
+        .reserved = 0u32,
+      };
+    }
+    return Duration {
+      .whole_seconds = (0i64 - self.whole_seconds) - 1i64,
+      .subsecond_nanoseconds =
+          nanoseconds_per_second() - self.subsecond_nanoseconds,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn equal(
+      self: const Duration&, other: const Duration&): bool {
+    return self.whole_seconds == other.whole_seconds &&
+           self.subsecond_nanoseconds == other.subsecond_nanoseconds;
+  }
+
+  pub const fn less_than(
+      self: const Duration&, other: const Duration&): bool {
+    if (self.whole_seconds != other.whole_seconds) {
+      return self.whole_seconds < other.whole_seconds;
+    }
+    return self.subsecond_nanoseconds < other.subsecond_nanoseconds;
+  }
+
+  pub const fn less_than_or_equal(
+      self: const Duration&, other: const Duration&): bool {
+    if (self.whole_seconds != other.whole_seconds) {
+      return self.whole_seconds < other.whole_seconds;
+    }
+    return self.subsecond_nanoseconds <= other.subsecond_nanoseconds;
+  }
+}
+
+impl Instant {
+  pub const fn add(
+      self: const Instant&, duration: const Duration&): Instant {
+    let nanoseconds =
+        self.subsecond_nanoseconds + duration.subsecond_nanoseconds;
+    let carry = nanoseconds >= nanoseconds_per_second();
+    return Instant {
+      .whole_seconds = add_signed_seconds(
+          self.whole_seconds, duration.whole_seconds, carry),
+      .subsecond_nanoseconds = if (carry) {
+        nanoseconds - nanoseconds_per_second()
+      } else {
+        nanoseconds
+      },
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn subtract(
+      self: const Instant&, duration: const Duration&): Instant {
+    let borrow =
+        self.subsecond_nanoseconds < duration.subsecond_nanoseconds;
+    return Instant {
+      .whole_seconds = subtract_signed_seconds(
+          self.whole_seconds, duration.whole_seconds, borrow),
+      .subsecond_nanoseconds = if (borrow) {
+        (self.subsecond_nanoseconds + nanoseconds_per_second()) -
+            duration.subsecond_nanoseconds
+      } else {
+        self.subsecond_nanoseconds - duration.subsecond_nanoseconds
+      },
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn difference(
+      self: const Instant&, other: const Instant&): Duration {
+    let self_is_less = self.whole_seconds < other.whole_seconds ||
+                       (self.whole_seconds == other.whole_seconds &&
+                        self.subsecond_nanoseconds <
+                            other.subsecond_nanoseconds);
+    if (self_is_less == false) {
+      if (self.subsecond_nanoseconds >= other.subsecond_nanoseconds) {
+        let seconds = self.whole_seconds - other.whole_seconds;
+        if (seconds > i64_max_as_u64()) {
+          return Duration {
+            .whole_seconds =
+                trap_duration_overflow(seconds - i64_max_as_u64()),
+            .subsecond_nanoseconds = 0u32,
+            .reserved = 0u32,
+          };
+        }
+        return Duration {
+          .whole_seconds = seconds as i64,
+          .subsecond_nanoseconds =
+              self.subsecond_nanoseconds - other.subsecond_nanoseconds,
+          .reserved = 0u32,
+        };
+      }
+      let seconds = (self.whole_seconds - other.whole_seconds) - 1u64;
+      if (seconds > i64_max_as_u64()) {
+        return Duration {
+          .whole_seconds =
+              trap_duration_overflow(seconds - i64_max_as_u64()),
+          .subsecond_nanoseconds = 0u32,
+          .reserved = 0u32,
+        };
+      }
+      return Duration {
+        .whole_seconds = seconds as i64,
+        .subsecond_nanoseconds =
+            (self.subsecond_nanoseconds + nanoseconds_per_second()) -
+            other.subsecond_nanoseconds,
+        .reserved = 0u32,
+      };
+    }
+
+    let seconds_magnitude = other.whole_seconds - self.whole_seconds;
+    if (self.subsecond_nanoseconds >= other.subsecond_nanoseconds) {
+      if (seconds_magnitude > i64_min_magnitude()) {
+        return Duration {
+          .whole_seconds =
+              trap_duration_overflow(
+                  seconds_magnitude - i64_min_magnitude()),
+          .subsecond_nanoseconds = 0u32,
+          .reserved = 0u32,
+        };
+      }
+      if (seconds_magnitude == i64_min_magnitude()) {
+        return Duration {
+          .whole_seconds = i64_min_magnitude() as i64,
+          .subsecond_nanoseconds =
+              self.subsecond_nanoseconds - other.subsecond_nanoseconds,
+          .reserved = 0u32,
+        };
+      }
+      return Duration {
+        .whole_seconds = 0i64 - (seconds_magnitude as i64),
+        .subsecond_nanoseconds =
+            self.subsecond_nanoseconds - other.subsecond_nanoseconds,
+        .reserved = 0u32,
+      };
+    }
+
+    if (seconds_magnitude > i64_max_as_u64()) {
+      return Duration {
+        .whole_seconds =
+            trap_duration_overflow(seconds_magnitude - i64_max_as_u64()),
+        .subsecond_nanoseconds = 0u32,
+        .reserved = 0u32,
+      };
+    }
+    return Duration {
+      .whole_seconds = (0i64 - (seconds_magnitude as i64)) - 1i64,
+      .subsecond_nanoseconds =
+          (self.subsecond_nanoseconds + nanoseconds_per_second()) -
+          other.subsecond_nanoseconds,
+      .reserved = 0u32,
+    };
+  }
+
+  pub const fn equal(
+      self: const Instant&, other: const Instant&): bool {
+    return self.whole_seconds == other.whole_seconds &&
+           self.subsecond_nanoseconds == other.subsecond_nanoseconds;
+  }
+
+  pub const fn less_than(
+      self: const Instant&, other: const Instant&): bool {
+    if (self.whole_seconds != other.whole_seconds) {
+      return self.whole_seconds < other.whole_seconds;
+    }
+    return self.subsecond_nanoseconds < other.subsecond_nanoseconds;
+  }
+
+  pub const fn less_than_or_equal(
+      self: const Instant&, other: const Instant&): bool {
+    if (self.whole_seconds != other.whole_seconds) {
+      return self.whole_seconds < other.whole_seconds;
+    }
+    return self.subsecond_nanoseconds <= other.subsecond_nanoseconds;
+  }
+}

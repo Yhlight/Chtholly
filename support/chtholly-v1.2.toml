@@ -1,0 +1,49 @@
+schema = "chtholly-language-surface-v3"
+release = "1.2"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.1.toml"
+
+normative_specs = [
+  "docs/spec/v1.2-language-roadmap.md",
+  "docs/spec/environment-bearing-callables.md",
+]
+
+[[feature]]
+id = "callable-system"
+title = "Environment-bearing callable values"
+scope = "v1.2"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/environment-bearing-callables.md#source-surface"
+nodes = ["ClosureExpr", "ClosureCaptureList", "ClosureCopyCapture", "ClosureMoveCapture", "ClosureVarCapture"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "tests/chtholly_environment_callable_abi_tests.cpp"]
+
+[[feature]]
+id = "callable-interfaces"
+title = "std::callable Invoke and InvokeMut requirements"
+scope = "v1.2"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.2-language-roadmap.md#callable-interfaces"
+nodes = ["InterfaceDecl", "ClosureExpr"]
+evidence = ["scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "tests/fixtures/callable-interface-probe/chtholly.toml", "tests/chtholly_environment_callable_abi_tests.cpp"]
+
+[[feature]]
+id = "bound-methods"
+title = "Bound method values over the closure environment ABI"
+scope = "v1.2"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.2-language-roadmap.md#bound-method-values"
+nodes = ["MemberExpr", "MoveExpr", "CallExpr"]
+evidence = ["docs/spec/bound-method-values.md", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py", "tests/chtholly_environment_callable_abi_tests.cpp"]
+
+[[feature]]
+id = "operator-overloading"
+title = "Operator overloading after callable ABI stabilization"
+scope = "post-v1.2"
+design = "pending"
+implementation = "none"
+spec = "docs/spec/v1.2-language-roadmap.md#operator-overloading"
+evidence = []

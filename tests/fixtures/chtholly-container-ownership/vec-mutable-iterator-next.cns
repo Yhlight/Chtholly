@@ -1,0 +1,9 @@
+module vec_mutable_iterator_next;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  let iterator = values.iter_mut();
+  let advanced = (move iterator).next();
+  return 0;
+}

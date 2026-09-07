@@ -1,0 +1,111 @@
+module std::ops;
+
+import std::compare;
+
+pub trait Negation {
+  alias Output;
+  fn negate(self: const Self&): Output;
+}
+
+pub trait Addition<Rhs> {
+  alias Output;
+  fn add(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait Subtraction<Rhs> {
+  alias Output;
+  fn subtract(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait Multiplication<Rhs> {
+  alias Output;
+  fn multiply(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait Division<Rhs> {
+  alias Output;
+  fn divide(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait Remainder<Rhs> {
+  alias Output;
+  fn remainder(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait AdditionAssignment<Rhs> {
+  fn add_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait SubtractionAssignment<Rhs> {
+  fn subtract_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait MultiplicationAssignment<Rhs> {
+  fn multiply_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait DivisionAssignment<Rhs> {
+  fn divide_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait RemainderAssignment<Rhs> {
+  fn remainder_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait BitwiseComplement {
+  alias Output;
+  fn complement(self: const Self&): Output;
+}
+
+pub trait BitwiseAnd<Rhs> {
+  alias Output;
+  fn bit_and(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait BitwiseXor<Rhs> {
+  alias Output;
+  fn bit_xor(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait BitwiseOr<Rhs> {
+  alias Output;
+  fn bit_or(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait LeftShift<Rhs> {
+  alias Output;
+  fn shift_left(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait RightShift<Rhs> {
+  alias Output;
+  fn shift_right(self: const Self&, rhs: const Rhs&): Output;
+}
+
+pub trait BitwiseAndAssignment<Rhs> {
+  fn bit_and_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait BitwiseXorAssignment<Rhs> {
+  fn bit_xor_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait BitwiseOrAssignment<Rhs> {
+  fn bit_or_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait LeftShiftAssignment<Rhs> {
+  fn shift_left_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait RightShiftAssignment<Rhs> {
+  fn shift_right_assign(self: Self&, rhs: const Rhs&): void;
+}
+
+pub trait Equality<Rhs> {
+  fn equal(self: const Self&, rhs: const Rhs&): bool;
+}
+
+pub trait Comparison<Rhs> {
+  fn compare(self: const Self&, rhs: const Rhs&): std::compare::Ordering;
+}

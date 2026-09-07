@@ -1,0 +1,103 @@
+module main;
+
+import std::collections;
+import std::iter;
+import std::iter::adapters;
+import std::iter::mutable;
+import std::vec;
+
+struct Slot {
+  value: i32;
+}
+
+impl Slot {
+  fn update(self: Self&, value: i32): i32& {
+    self.value = value;
+    return &self.value;
+  }
+}
+
+struct CountingPredicate {
+  limit: i32;
+  calls: i32;
+}
+
+impl std::iter::mutable::PredicateMut<(i32,)> for CountingPredicate {
+  fn test(self: Self&, args: (i32,)): bool {
+    self.calls += 1;
+    return args.0 < self.limit;
+  }
+}
+
+struct CountingFolder {
+  calls: i32;
+}
+
+impl std::iter::mutable::FolderMut<i32, i32> for CountingFolder {
+  fn combine(self: Self&, accumulator: i32, item: i32): i32 {
+    self.calls += 1;
+    return accumulator + item;
+  }
+}
+
+fn staged_borrow(): i32 {
+  var slot = Slot { .value = 0 };
+  var update = slot.update;
+  let mapped = std::iter::mutable::map_mut(
+      std::iter::adapters::range(1, 4), move update);
+  var sum = 0;
+  foreach (var item: i32& in move mapped) {
+    sum += item;
+  }
+  if (slot.value != 3) { return 1; }
+  return sum;
+}
+
+fn main(): i32 {
+  let source = std::iter::adapters::range(1, 4);
+  let values = std::collections::collect(
+      move source,
+      std::collections::vec_collector(std::vec::Vec<i32>::init()));
+  if (values.len() != 3usize) { return 1; }
+
+  let values_view = std::collections::view(&values);
+  let view = values_view.items();
+  var sum = 0;
+  foreach (let item: const i32& in move view) {
+    sum += item;
+  }
+  if (sum != 6) { return 2; }
+
+  var offset = fn [var value = 0](item: i32): i32 {
+    value += 1;
+    return item + value;
+  };
+  let mapped = std::iter::mutable::map_mut(
+      std::iter::adapters::range(0, 3), move offset);
+  let stateful = std::collections::collect(
+      move mapped,
+      std::collections::vec_collector(std::vec::Vec<i32>::init()));
+  if (stateful.at(0usize) != 1 || stateful.at(1usize) != 3 ||
+      stateful.at(2usize) != 5) { return 3; }
+  if (staged_borrow() != 6) { return 4; }
+
+  let filtered = std::iter::mutable::filter_mut(
+      std::iter::adapters::range(0, 5),
+      CountingPredicate { .limit = 3, .calls = 0 });
+  let selected = std::collections::collect(
+      move filtered,
+      std::collections::vec_collector(std::vec::Vec<i32>::init()));
+  if (selected.len() != 3usize || selected.at(2usize) != 2) { return 5; }
+
+  let folded = std::iter::mutable::fold_mut(
+      std::iter::adapters::range(1, 5), 0,
+      CountingFolder { .calls = 0 });
+  if (folded != 10) { return 6; }
+  if (!std::iter::mutable::any_mut(
+          std::iter::adapters::range(0, 5),
+          CountingPredicate { .limit = 1, .calls = 0 })) { return 7; }
+  if (!std::iter::mutable::all_mut(
+          std::iter::adapters::range(0, 3),
+          CountingPredicate { .limit = 3, .calls = 0 })) { return 8; }
+  return 0;
+}

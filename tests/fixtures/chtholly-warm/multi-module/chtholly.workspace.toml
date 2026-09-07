@@ -1,0 +1,3 @@
+[workspace]
+members = ["app"]
+default_members = ["app"]

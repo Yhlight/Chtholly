@@ -1,0 +1,29 @@
+module main;
+
+import std::iter;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(1);
+  values.push(2);
+  let iterator = values.iter_mut();
+  let first = (move iterator).next();
+  return switch (first) {
+    std::iter::IterationStep<i32&, std::vec::VecMutIterator<i32> >::Done => 0;
+    std::iter::IterationStep<i32&, std::vec::VecMutIterator<i32> >::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      let second = (move continuation).next();
+      let prior = item;
+      switch (second) {
+        std::iter::IterationStep<i32&, std::vec::VecMutIterator<i32> >::Done =>
+            prior;
+        std::iter::IterationStep<i32&, std::vec::VecMutIterator<i32> >::Item {
+          ..
+        } => prior;
+      }
+    };
+  };
+}

@@ -1,0 +1,145 @@
+// Test structured destructuring for assignment statements (v1 Entry 17)
+//
+// This tests the already-implemented assignment destructuring feature:
+// - Validation before commit
+// - Duplicate target detection
+// - Immutability checking
+// - Type checking
+// - Multi-field assignments
+
+module test;
+
+struct Pair {
+  pub x: i32;
+  pub y: i32;
+}
+
+struct Triple {
+  pub a: i32;
+  pub b: i32;
+  pub c: i32;
+}
+
+// Test 1: Basic assignment destructuring
+fn test_basic_assignment(): i32 {
+  var x: i32 = 0;
+  var y: i32 = 0;
+  let p = Pair { .x = 10, .y = 20 };
+
+  // Assignment destructuring with move
+  { x = move .x, y = move .y } = p;
+
+  return x + y;  // Should return 30
+}
+
+// Test 2: Assignment destructuring with copy
+fn test_copy_assignment(): i32 {
+  var x: i32 = 0;
+  var y: i32 = 0;
+  let p = Pair { .x = 5, .y = 15 };
+
+  // Copy instead of move
+  { x = copy .x, y = copy .y } = p;
+
+  // p still usable after copy
+  return x + y + p.x + p.y;  // 5 + 15 + 5 + 15 = 40
+}
+
+// Test 3: Partial assignment with rest
+fn test_partial_assignment(): i32 {
+  var a: i32 = 0;
+  let t = Triple { .a = 100, .b = 200, .c = 300 };
+
+  // Assign only one field, rest ignored
+  { a = copy .a, .. } = t;
+
+  return a;  // Should return 100
+}
+
+// Test 4: Assignment to multiple variables from tuple
+fn test_tuple_assignment(): i32 {
+  var first: i32 = 0;
+  var second: i32 = 0;
+  let tuple = (42, 58);
+
+  // Tuple destructuring assignment
+  { first = move .0, second = move .1 } = tuple;
+
+  return first + second;  // Should return 100
+}
+
+// Test 5: Assignment to array elements (via pattern)
+fn test_array_pattern_assignment(): i32 {
+  var x: i32 = 0;
+  var y: i32 = 0;
+  var z: i32 = 0;
+  let arr: i32[3] = [1, 2, 3];
+
+  // Array element destructuring
+  { x = copy .0, y = copy .1, z = copy .2 } = arr;
+
+  return x + y + z;  // Should return 6
+}
+
+// Test 6: Swap using destructuring
+fn test_swap_pattern(): i32 {
+  var a: i32 = 10;
+  var b: i32 = 20;
+
+  // Create temporary tuple
+  let temp = (b, a);
+
+  // Swap via destructuring
+  { a = move .0, b = move .1 } = temp;
+
+  return a + b;  // a=20, b=10, sum=30
+}
+
+// Test 7: Nested struct assignment
+struct Outer {
+  pub inner: Pair;
+  pub value: i32;
+}
+
+fn test_nested_assignment(): i32 {
+  var x: i32 = 0;
+  var v: i32 = 0;
+  let outer = Outer {
+    .inner = Pair { .x = 7, .y = 8 },
+    .value = 9
+  };
+
+  // Multi-level projection in assignment
+  { x = copy .inner.x, v = copy .value, .. } = outer;
+
+  return x + v;  // 7 + 9 = 16
+}
+
+// Test 8: Assignment with reference borrowing
+fn test_borrow_assignment(): i32 {
+  let p = Pair { .x = 11, .y = 22 };
+  var x_placeholder: i32 = 0;
+  var y_placeholder: i32 = 0;
+  var x_ref: const i32& = &x_placeholder;
+  var y_ref: const i32& = &y_placeholder;
+
+  // Borrow fields into references
+  { x_ref = &.x, y_ref = &.y } = p;
+
+  return copy x_ref + copy y_ref;  // 11 + 22 = 33
+}
+
+// Main test runner
+fn main(): i32 {
+  let r1 = test_basic_assignment();
+  let r2 = test_copy_assignment();
+  let r3 = test_partial_assignment();
+  let r4 = test_tuple_assignment();
+  let r5 = test_array_pattern_assignment();
+  let r6 = test_swap_pattern();
+  let r7 = test_nested_assignment();
+  let r8 = test_borrow_assignment();
+
+  // Sum all results: 30+40+100+100+6+30+16+33 = 355
+  return r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+}

@@ -1,0 +1,17 @@
+module forwarding_read_before_initialize;
+
+import token_provider;
+
+fn bad_forward(token: token_provider::Token&): i32 {
+  let alias = token;
+  unsafe {
+    return token_provider::acquire(token);
+  }
+}
+
+fn main(): i32 {
+  unsafe {
+    let token: token_provider::Token;
+    return bad_forward(token);
+  }
+}

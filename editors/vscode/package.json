@@ -1,0 +1,117 @@
+{
+  "name": "chtholly",
+  "displayName": "Chtholly",
+  "description": "Language support for the Chtholly developer preview",
+  "version": "0.2.0-preview.0",
+  "publisher": "chtholly-language",
+  "license": "Apache-2.0 OR MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:chtholly",
+    "onLanguage:cfdl",
+    "onCommand:chtholly.check",
+    "onCommand:chtholly.build",
+    "onCommand:chtholly.run",
+    "onCommand:chtholly.doctor"
+  ],
+  "main": "./dist/extension.js",
+  "files": [
+    "dist",
+    "language-configuration.json",
+    "syntaxes",
+    "README.md",
+    "LICENSE"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Chtholly",
+      "properties": {
+        "chtholly.server.path": {
+          "type": "string",
+          "default": "chtholly-lsp",
+          "description": "Path to the chtholly-lsp executable."
+        },
+        "chtholly.compiler.path": {
+          "type": "string",
+          "default": "chthollyc",
+          "description": "Path to the chthollyc compiler executable."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "chtholly.check",
+        "title": "Chtholly: Check Project"
+      },
+      {
+        "command": "chtholly.build",
+        "title": "Chtholly: Build Project"
+      },
+      {
+        "command": "chtholly.run",
+        "title": "Chtholly: Run Project"
+      },
+      {
+        "command": "chtholly.doctor",
+        "title": "Chtholly: Diagnose Toolchain"
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "chtholly",
+        "owner": "chtholly",
+        "fileLocation": ["absolute"],
+        "pattern": {
+          "regexp": "^(?:chthollyc\\[[^\\]]+\\]: )?(.+):(\\d+):(\\d+): (error|warning|note): (.+) \\[([^\\]]+)\\]$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5,
+          "code": 6
+        }
+      }
+    ],
+    "languages": [
+      {
+        "id": "chtholly",
+        "aliases": ["Chtholly", "chtholly"],
+        "extensions": [".cns"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "cfdl",
+        "aliases": ["Chtholly CFDL", "cfdl"],
+        "extensions": [".cfdl"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "chtholly",
+        "scopeName": "source.chtholly",
+        "path": "./syntaxes/chtholly.tmLanguage.json"
+      },
+      {
+        "language": "cfdl",
+        "scopeName": "source.chtholly.cfdl",
+        "path": "./syntaxes/cfdl.tmLanguage.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.2",
+    "esbuild": "^0.25.9"
+  },
+  "scripts": {
+    "compile": "esbuild extension.js --bundle --external:vscode --platform=node --format=cjs --outfile=dist/extension.js"
+  }
+}

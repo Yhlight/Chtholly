@@ -1,0 +1,7 @@
+module slice_read_ok;
+
+fn main(): i32 {
+  let values: i32[2] = [10, 20];
+  let view = values[..];
+  return view[1];
+}

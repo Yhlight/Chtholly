@@ -1,0 +1,88 @@
+module telemetry::analysis;
+
+import std::callable;
+import std::collections;
+import std::iter::mutable;
+import telemetry::model;
+
+pub struct Normalize {
+  offset: i32;
+  calls: i32;
+}
+
+pub fn normalizer(offset: i32): Normalize {
+  return Normalize { .offset = offset, .calls = 0 };
+}
+
+impl std::callable::InvokeMut<(i32,)> for Normalize {
+  alias Output = telemetry::model::Sample;
+
+  fn invoke(self: Self&, args: (i32,)): telemetry::model::Sample {
+    self.calls += 1;
+    return telemetry::model::sample(self.calls % 8, args.0 + self.offset);
+  }
+}
+
+pub struct Increment {
+  offset: i32;
+}
+
+pub fn incrementer(offset: i32): Increment {
+  return Increment { .offset = offset };
+}
+
+impl std::callable::InvokeMut<(i32,)> for Increment {
+  alias Output = i32;
+
+  fn invoke(self: Self&, args: (i32,)): i32 {
+    return args.0 + self.offset;
+  }
+}
+
+pub struct Accept {
+  upper_bound: i32;
+  calls: i32;
+}
+
+pub fn accept_below(upper_bound: i32): Accept {
+  return Accept { .upper_bound = upper_bound, .calls = 0 };
+}
+
+impl std::iter::mutable::PredicateMut<(telemetry::model::Sample,)> for Accept {
+  fn test(self: Self&, args: (telemetry::model::Sample,)): bool {
+    self.calls += 1;
+    return args.0.value < self.upper_bound;
+  }
+}
+
+pub struct StatsCollector {
+  count: i32;
+  sum: i64;
+  minimum: i32;
+  maximum: i32;
+}
+
+pub fn stats_collector(): StatsCollector {
+  return StatsCollector {
+    .count = 0,
+    .sum = 0i64,
+    .minimum = 2147483647,
+    .maximum = -2147483648,
+  };
+}
+
+impl std::collections::Collector<telemetry::model::Sample> for StatsCollector {
+  alias Output = telemetry::model::Summary;
+
+  fn push(self: Self&, item: telemetry::model::Sample): void {
+    self.count += 1;
+    self.sum += item.value as i64;
+    if (item.value < self.minimum) { self.minimum = item.value; }
+    if (item.value > self.maximum) { self.maximum = item.value; }
+  }
+
+  fn finish(self: Self): telemetry::model::Summary {
+    return telemetry::model::summary(
+        self.count, self.sum, self.minimum, self.maximum);
+  }
+}

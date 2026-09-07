@@ -1,0 +1,10 @@
+[package]
+name = "sqlite-safety"
+language = "1.10"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]
+
+[native]
+link_libraries = ["__SQLITE_PROVIDER__", "__SQLITE_LIBRARY__"]

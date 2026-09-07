@@ -1,0 +1,28 @@
+module std::result;
+
+import std::callable;
+
+pub enum Result<T, E> {
+  Ok { T },
+  Err { E },
+}
+
+pub fn map_error<T, E, F>(value: Result<T, E>, transform: F): Result<T, F::Output>
+    where F: std::callable::InvokeOnce<(E,)> {
+  return switch (move value) {
+    Result<T, E>::Ok { success = move .0 } => Result<T, F::Output>::Ok { move success };
+    Result<T, E>::Err { error = move .0 } => Result<T, F::Output>::Err {
+      (move transform).invoke((move error,))
+    };
+  };
+}
+
+pub fn map_error<E, F>(value: Result<void, E>, transform: F): Result<void, F::Output>
+    where F: std::callable::InvokeOnce<(E,)> {
+  return switch (move value) {
+    Result<void, E>::Ok { .. } => Result<void, F::Output>::Ok {};
+    Result<void, E>::Err { error = move .0 } => Result<void, F::Output>::Err {
+      (move transform).invoke((move error,))
+    };
+  };
+}

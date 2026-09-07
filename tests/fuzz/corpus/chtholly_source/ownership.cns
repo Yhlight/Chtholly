@@ -1,0 +1,6 @@
+module fuzz;
+struct Pair { left: i32; right: i32; }
+fn take(value: Pair): i32 {
+  let { left = move .left, right = move .right } = move value;
+  return left + right;
+}

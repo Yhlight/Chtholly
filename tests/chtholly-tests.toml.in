@@ -1,0 +1,923 @@
+format = 1
+suite = "chtholly"
+
+[[test]]
+name = "chtholly_framework_smoke"
+kind = "inprocess"
+labels = ["framework"]
+registry = "framework_smoke"
+timeout_seconds = 10
+serial = true
+
+[[test]]
+name = "chtholly_artifact_cache_report"
+kind = "process"
+labels = ["compiler", "artifact", "cache", "recovery"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/artifact_cache_report_tests.py", "--script", "@SOURCE_DIR@/scripts/report-artifact-cache.py"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_test_runner_tests"
+kind = "process"
+labels = ["framework", "runner", "hardening"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/test_runner_tests.py", "--runner", "@TARGET_TEST_RUNNER@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_project_workflow_tests"
+kind = "process"
+labels = ["compiler", "cli", "project", "workspace"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_project_workflow_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_preview_acceptance"
+kind = "process"
+labels = ["compiler", "preview", "release", "cli", "workflow"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/preview-acceptance.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--output", "@BUILD_DIR@/tests/preview-acceptance.jsonl"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_std_safe_e2e_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "runtime", "io", "env"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_std_safe_e2e_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_install_tree_tests"
+kind = "process"
+labels = ["compiler", "install", "release", "packaging", "profile", "cross-platform"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_install_tree_tests.py", "--cmake", "@CMAKE@", "--build-dir", "@BUILD_DIR@", "--source-dir", "@SOURCE_DIR@"@INSTALL_VSIX_ARG@]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 300
+serial = true
+
+[[test]]
+name = "chtholly_only_boundary_audit"
+kind = "process"
+labels = ["compiler", "architecture", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/compiler-boundary-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_semantic_architecture_audit"
+kind = "process"
+labels = ["compiler", "architecture", "semantics", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/semantic-architecture-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_carbon_architecture_audit"
+kind = "process"
+labels = ["compiler", "architecture", "carbon", "semantics", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/carbon-architecture-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_reference_doc_audit"
+kind = "process"
+labels = ["documentation", "stdlib", "diagnostics", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/reference-doc-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_product_status_audit"
+kind = "process"
+labels = ["documentation", "release", "contract", "status"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/product-status-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_compatibility_audit"
+kind = "process"
+labels = ["documentation", "release", "compatibility", "artifact", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/compatibility_audit_tests.py", "--script", "@SOURCE_DIR@/scripts/compatibility-audit.py", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_release_matrix_evidence_tests"
+kind = "process"
+labels = ["release", "parity", "evidence", "negative"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/release_matrix_evidence_tests.py", "--script", "@SOURCE_DIR@/scripts/release-matrix-evidence.py"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_release_contract_audit_tests"
+kind = "process"
+labels = ["release", "stage-boundary", "evidence", "documentation", "contract", "negative"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/release_contract_audit_tests.py", "--script", "@SOURCE_DIR@/scripts/release-contract-audit.py"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_supply_chain_evidence_tests"
+kind = "process"
+labels = ["release", "supply-chain", "sbom", "provenance", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/supply_chain_evidence_tests.py", "--script", "@SOURCE_DIR@/scripts/supply-chain-evidence.py", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_cffi_tier1_audit"
+kind = "process"
+labels = ["cffi", "cfdl", "tier-1", "contract", "documentation"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/cffi-tier1-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_source_architecture_audit"
+kind = "process"
+labels = ["compiler", "architecture", "source-layout", "refactor"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/source-architecture-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_historical_architecture_audit"
+kind = "process"
+labels = ["compiler", "architecture", "history", "cleanup", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/historical-architecture-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_trace_audit"
+kind = "process"
+labels = ["compiler", "architecture", "branding", "migration", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/compiler-branding-audit.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_1_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.1.toml", "--generated", "docs/spec/v1.1-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_2_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.2.toml", "--generated", "docs/spec/v1.2-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_3_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.3.toml", "--generated", "docs/spec/v1.3-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_4_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.4"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.4.toml", "--generated", "docs/spec/v1.4-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_5_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.5"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.5.toml", "--generated", "docs/spec/v1.5-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_6_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.6"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.6.toml", "--generated", "docs/spec/v1.6-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_7_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.7"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.7.toml", "--generated", "docs/spec/v1.7-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_8_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.8"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.8.toml", "--generated", "docs/spec/v1.8-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_9_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.9"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.9.toml", "--generated", "docs/spec/v1.9-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_v1_10_surface_contract"
+kind = "process"
+labels = ["compiler", "architecture", "syntax", "contract", "language-1.10"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/chtholly-v1-surface.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "support/chtholly-v1.10.toml", "--generated", "docs/spec/v1.10-surface.generated.md", "--check"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_artifact_load_benchmark_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "benchmark"]
+command = ["@TARGET_ARTIFACT_BENCHMARK@", "--repetitions", "1"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_warm_artifact_sample_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "benchmark"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/warm-artifact-sample.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@", "--repetitions", "1", "--jobs", "1", "2", "--output", "@BUILD_DIR@/tests/chtholly-warm-artifact-smoke.json"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_artifact_dispatch_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "hardening"]
+command = ["@TARGET_ARTIFACT_DISPATCH@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_source_dispatch_tests"
+kind = "process"
+labels = ["compiler", "frontend", "semantics", "hardening"]
+command = ["@TARGET_SOURCE_DISPATCH@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_cfdl_resource_flow_tests"
+kind = "process"
+labels = ["compiler", "architecture", "cfdl", "resource-flow"]
+command = ["@TARGET_CFDL@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_host_runtime_tests"
+kind = "process"
+labels = ["runtime", "std-host", "io", "time", "task"]
+command = ["@TARGET_HOST_RUNTIME@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_component_abi2_design_tests"
+kind = "process"
+labels = ["compiler", "component", "abi-2", "design-gate"]
+command = ["@TARGET_COMPONENT_ABI2_DESIGN@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_component_abi2_rejection_tests"
+kind = "process"
+labels = ["component", "abi-1", "abi-2", "compatibility", "negative"]
+command = ["@TARGET_COMPONENT_ABI2_REJECTION@", "@TARGET_COMPONENT_ABI2_REJECTION_FIXTURE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_resource_lease_runtime_tests"
+kind = "process"
+labels = ["runtime", "component", "abi-2", "resource-lease", "negative"]
+command = ["@TARGET_RESOURCE_LEASE_RUNTIME@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_component_loader_v2_tests"
+kind = "process"
+labels = ["component", "abi-2", "loader", "negative"]
+command = ["@TARGET_COMPONENT_LOADER_V2@", "@TARGET_COMPONENT_ABI2_REJECTION_FIXTURE@", "@TARGET_COMPONENT_ABI2_PENDING_FIXTURE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_payload_transport_v2_tests"
+kind = "process"
+labels = ["runtime", "component", "abi-2", "payload", "ownership"]
+command = ["@TARGET_PAYLOAD_TRANSPORT_V2@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_component_payload_cross_package_tests"
+kind = "process"
+labels = ["compiler", "component", "abi-2", "artifact", "payload", "ownership"]
+command = ["@TARGET_COMPONENT_PAYLOAD_CROSS_PACKAGE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_component_abi2_unload_reload_soak"
+kind = "process"
+labels = ["component", "abi-2", "concurrency", "unload", "reload", "soak"]
+command = ["@TARGET_ABI2_UNLOAD_RELOAD_SOAK@", "@TARGET_COMPONENT_ABI2_PENDING_FIXTURE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_abi2_evidence"
+kind = "process"
+labels = ["component", "abi-2", "evidence", "soak"]
+command = ["@PYTHON@", "@TARGET_ABI2_EVIDENCE_SCRIPT@", "--soak", "@TARGET_ABI2_UNLOAD_RELOAD_SOAK@", "--provider", "@TARGET_COMPONENT_ABI2_PENDING_FIXTURE@", "--output", "@BUILD_DIR@/tests/abi2-evidence.json", "--target", "@TARGET_COMPONENT_TRIPLE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+serial = true
+
+[[test]]
+name = "chtholly_task_runtime_tests"
+kind = "process"
+labels = ["runtime", "task", "async", "cancellation", "deadline", "completion"]
+command = ["@TARGET_TASK_RUNTIME@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_host_runtime_v2_tests"
+kind = "process"
+labels = ["runtime", "std-net", "ipv4"]
+command = ["@TARGET_HOST_RUNTIME_V2@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_cffi_tool_tests"
+kind = "process"
+labels = ["compiler", "cffi", "cfdl", "clang", "native", "sqlite"]
+capabilities = ["cffi", "clang", "native-libraries"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_cffi_tool_tests.py", "--cffi", "@TARGET_CFFI@", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@", "--cc", "@C_COMPILER@", "--provider", "@CFFI_PROVIDER@", "--real-provider", "@CFFI_REAL_PROVIDER@", "--sqlite-include", "@SQLITE_INCLUDE@", "--sqlite-library", "@SQLITE_LIBRARY@", "--zlib-library", "@ZLIB_LIBRARY@", "--curl-library", "@CURL_LIBRARY@", "--evidence-output", "@BUILD_DIR@/tests/cffi-tier1-evidence.json"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 420
+serial = true
+
+[[test]]
+name = "chtholly_cffi_manifest_tests"
+kind = "process"
+labels = ["compiler", "cffi", "manifest", "lockfile", "cross-package", "llvm", "runtime", "negative"]
+capabilities = ["cffi", "artifact", "cross-package"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_cffi_manifest_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--cffi", "@TARGET_CFFI@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@", "--cc", "@C_COMPILER@", "--provider", "@CFFI_PROVIDER@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_cffi_toolchain_cache_tests"
+kind = "process"
+labels = ["compiler", "cffi", "toolchain", "cache", "cross-command", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_cffi_toolchain_cache_tests.py", "--cffi", "@TARGET_CFFI@", "--target", "@TARGET_COMPONENT_TRIPLE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+serial = true
+
+[[test]]
+name = "chtholly_stdlib_llvm_fixture_tests"
+kind = "process"
+labels = ["compiler", "std-host", "interop", "llvm", "fixture"]
+command = ["@TARGET_STDLIB_LLVM@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_component_deployment_tests"
+kind = "process"
+labels = ["component", "deployment", "upgrade", "rollback", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_component_deployment_tests.py", "--tool", "@TARGET_COMPONENT_DEPLOY@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_container_ownership_fixture_tests"
+kind = "process"
+labels = ["compiler", "ownership", "fixture"]
+command = ["@TARGET_CONTAINER_OWNERSHIP@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_vec_runtime_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "vec", "runtime", "lifecycle"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_vec_runtime_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+
+[[test]]
+name = "chtholly_callable_contract_tests"
+kind = "process"
+labels = ["compiler", "contract", "fixture"]
+command = ["@TARGET_CALLABLE_CONTRACT@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_deferred_definition_worklist_tests"
+kind = "process"
+labels = ["compiler", "architecture", "semantics", "worklist"]
+command = ["@TARGET_WORKLIST@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_diagnostic_format_tests"
+kind = "process"
+labels = ["compiler", "diagnostic", "developer-experience"]
+command = ["@TARGET_DIAGNOSTIC_FORMAT@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_debug_type_tests"
+kind = "process"
+labels = ["compiler", "llvm", "debug", "fixture"]
+command = ["@TARGET_DEBUG_TYPES@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_semantic_support_tests"
+kind = "process"
+labels = ["compiler", "architecture", "semantics", "literal", "scope", "control-flow"]
+command = ["@TARGET_SEMANTIC_SUPPORT@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_open_addressing_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "collections", "hashmap", "hashset", "open-addressing", "lifecycle"]
+command = ["@TARGET_OPEN_ADDRESSING@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_container_abi_tests"
+kind = "process"
+labels = ["runtime", "collections", "hashmap", "hashset", "vtable", "rehash", "borrow"]
+command = ["@TARGET_CONTAINER_ABI@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_container_benchmark"
+kind = "process"
+labels = ["runtime", "collections", "hashmap", "benchmark", "performance"]
+command = ["@TARGET_CONTAINER_BENCHMARK@", "2000"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_destructuring_tests"
+kind = "process"
+labels = ["compiler", "destructuring", "ownership", "diagnostic", "cross-package", "llvm", "runtime", "feature-matrix"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_destructuring_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+
+[[test]]
+name = "chtholly_contract_artifact_tests"
+kind = "process"
+labels = ["compiler", "contract", "artifact", "fixture"]
+command = ["@TARGET_CONTRACT_ARTIFACT@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_module_alias_tests"
+kind = "process"
+labels = ["compiler", "module", "alias", "artifact", "fixture"]
+command = ["@TARGET_MODULE_ALIAS@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_labeled_loop_tests"
+kind = "process"
+labels = ["compiler", "loop", "cleanup", "fixture"]
+command = ["@TARGET_LABELED_LOOP@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_environment_callable_abi_tests"
+kind = "process"
+labels = ["compiler", "callable", "closure", "bound-method", "artifact", "fixture"]
+command = ["@TARGET_ENVIRONMENT_CALLABLE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_sysv_abi_tests"
+kind = "process"
+labels = ["compiler", "architecture", "linux", "x86_64", "sysv", "ffi", "llvm"]
+command = ["@TARGET_SYSV_ABI@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_component_e2e_tests"
+kind = "process"
+labels = ["compiler", "component", "abi", "dynamic-loader", "runtime", "cross-platform"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_component_e2e_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--loader-test", "@TARGET_COMPONENT_LOADER@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_component_host_soak_tests"
+kind = "process"
+labels = ["compiler", "component", "host", "concurrency", "unload", "soak", "cross-platform"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_component_host_soak_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--host", "@TARGET_COMPONENT_HOST@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@", "--duration-seconds", "15", "--threads", "8"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_telemetry_component_tests"
+kind = "process"
+labels = ["compiler", "component", "telemetry", "stdlib", "ownership", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/telemetry_component_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--host", "@TARGET_TELEMETRY_COMPONENT_HOST@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_artifact_budget_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "hardening"]
+command = ["@TARGET_ARTIFACT_BUDGET@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_outcome_tests"
+kind = "process"
+labels = ["compiler", "architecture", "semantics", "outcome", "ownership"]
+command = ["@TARGET_OUTCOME@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_telemetry_ingest_tests"
+kind = "process"
+labels = ["compiler", "telemetry", "ingest", "file", "socket", "component", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/telemetry_ingest_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--host", "@TARGET_TELEMETRY_INGEST_HOST@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@", "--deployment-tool", "@TARGET_COMPONENT_DEPLOY@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+serial = true
+
+[[test]]
+name = "chtholly_package_artifact_interop_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "interop"]
+command = ["@TARGET_PACKAGE_INTEROP@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 120
+serial = true
+
+[[test]]
+name = "chtholly_artifact_seed_tests"
+kind = "process"
+labels = ["compiler", "architecture", "artifact", "hardening"]
+command = ["@TARGET_ARTIFACT_SEED@", "@BUILD_DIR@/tests/next-artifact-seeds"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_lsp_protocol_tests"
+kind = "process"
+labels = ["compiler", "architecture", "lsp", "protocol"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_lsp_protocol_tests.py", "--lsp", "@TARGET_LSP@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_vscode_extension_contract_tests"
+kind = "process"
+labels = ["compiler", "editor", "vscode", "developer-experience"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_vscode_extension_contract_tests.py", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_toolchain_workflow_tests"
+kind = "process"
+labels = ["compiler", "toolchain", "install", "upgrade", "rollback", "developer-experience"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_toolchain_workflow_tests.py", "--toolchain", "@TARGET_TOOLCHAIN@", "--compiler", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_toolchain_space_preflight_tests"
+kind = "process"
+labels = ["compiler", "toolchain", "install", "space", "diagnostics"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/toolchain_space_preflight_tests.py", "--toolchain", "@TARGET_TOOLCHAIN@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_toolchain_space_unit_tests"
+kind = "process"
+labels = ["compiler", "toolchain", "install", "space", "unit"]
+command = ["@TARGET_TOOLCHAIN_SPACE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_language_version_tests"
+kind = "process"
+labels = ["compiler", "language-version", "syntax", "feature-matrix"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_language_version_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_feature_matrix_tests"
+kind = "process"
+labels = ["compiler", "feature-matrix", "positive", "negative", "language-version", "cross-package", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_feature_matrix_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_semantic_gate_tests"
+kind = "process"
+labels = ["compiler", "semantics", "char", "conversion", "result", "option", "artifact", "fixture"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_semantic_gate_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_1_4_stability_tests"
+kind = "process"
+labels = ["compiler", "language-1.4", "stability", "determinism", "stress", "concurrency"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_1_4_stability_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@", "--container-test", "@TARGET_CONTAINER_OWNERSHIP@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_foreach_tests"
+kind = "process"
+labels = ["compiler", "language-1.4", "foreach", "ownership", "cleanup", "diagnostic", "llvm", "runtime", "feature-matrix"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_foreach_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_iterator_protocol_tests"
+kind = "process"
+labels = ["compiler", "language-1.5", "iterator", "ownership", "witness", "cross-package", "llvm"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_iterator_protocol_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_iterator_ecosystem_tests"
+kind = "process"
+labels = ["compiler", "language-1.6", "iterator", "adapter", "ownership", "negative", "cross-package", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_iterator_ecosystem_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_value_block_tests"
+kind = "process"
+labels = ["compiler", "language-1.7", "block", "unsafe", "switch", "ownership", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_value_block_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_iterator_algorithm_tests"
+kind = "process"
+labels = ["compiler", "language-1.7", "iterator", "algorithm", "ownership", "negative", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_iterator_algorithm_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_value_enum_tests"
+kind = "process"
+labels = ["compiler", "language-1.8", "enum", "artifact", "negative", "cross-package", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_value_enum_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_collection_protocol_tests"
+kind = "process"
+labels = ["compiler", "language-1.9", "collection", "iterator", "callable", "ownership", "negative", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_collection_protocol_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_hashmap_source_tests"
+kind = "process"
+labels = ["compiler", "language-1.9", "collections", "hashmap", "generic", "artifact", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_hashmap_source_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_custom_witness_tests"
+kind = "process"
+labels = ["compiler", "language-1.10", "collections", "hashmap", "witness", "lifecycle", "llvm", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_custom_witness_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 240
+serial = true
+
+[[test]]
+name = "chtholly_ownership_performance_tests"
+kind = "process"
+labels = ["compiler", "architecture", "ownership", "performance", "language-1.9", "workspace", "runtime"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_ownership_performance_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 300
+
+[[test]]
+name = "chtholly_build_performance_baseline_tests"
+kind = "process"
+labels = ["compiler", "performance", "cache", "cross-package", "evidence"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/build_performance_baseline_tests.py", "--script", "@SOURCE_DIR@/scripts/build-performance-baseline.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 300
+serial = true
+
+[[test]]
+name = "chtholly_sqlite_safety_vertical"
+kind = "process"
+labels = ["compiler", "stdlib", "cffi", "cfdl", "application", "sqlite"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_sqlite_safety_tests.py", "--cffi", "@TARGET_CFFI@", "--cc", "@C_COMPILER@", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@", "--target", "@TARGET_COMPONENT_TRIPLE@", "--sqlite-include", "@SQLITE_INCLUDE@", "--sqlite-provider", "@SQLITE_PROVIDER@", "--sqlite-library", "@SQLITE_LIBRARY@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+serial = true
+
+[[test]]
+name = "chtholly_project_state_audit"
+kind = "process"
+labels = ["compiler", "architecture", "repository-hygiene", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/project_state_audit.py", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+serial = true
+
+[[test]]
+name = "chtholly_current_status_audit"
+kind = "process"
+labels = ["documentation", "status", "architecture", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/scripts/current-status-audit.py", "--source-dir", "@SOURCE_DIR@", "--manifest", "@BUILD_DIR@/tests/chtholly-tests.generated.toml"]
+working_directory = "@SOURCE_DIR@"
+timeout_seconds = 30
+serial = true
+
+[[test]]
+name = "chtholly_process_memory_tests"
+kind = "process"
+labels = ["compiler", "performance", "memory", "cross-platform", "evidence"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/process_memory_tests.py", "--script", "@SOURCE_DIR@/scripts/process-memory.py"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 30
+serial = true
+
+@FUZZ_TEST@
+
+[[test]]
+name = "chtholly_release_size_audit_contract"
+kind = "process"
+labels = ["release", "packaging", "size", "contract"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/release_size_audit_tests.py", "--script", "@SOURCE_DIR@/scripts/release-size-audit.py", "--check-budget"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+serial = true
+
+[[test]]
+name = "chtholly_check_contract_tests"
+kind = "process"
+labels = ["framework", "hardening", "fast"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/check_contract_tests.py", "--fixture", "@TARGET_CHECK_FIXTURE@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 30
+
+[[test]]
+name = "chtholly_channel_value_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "channel", "ownership", "native"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_channel_value_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_callable_composition_tests"
+kind = "process"
+labels = ["compiler", "callable", "cross-package", "ownership"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_callable_composition_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_telemetry_file_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "telemetry", "native"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_telemetry_file_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@", "--source-dir", "@SOURCE_DIR@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_abi2_resource_tests"
+kind = "process"
+labels = ["runtime", "abi-2", "ownership", "concurrency"]
+command = ["@TARGET_ABI2_RESOURCE@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_condition_tests"
+kind = "process"
+labels = ["compiler", "ownership", "conditions"]
+command = ["@TARGET_CONDITION_TESTS@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 60
+
+[[test]]
+name = "chtholly_result_composition_tests"
+kind = "process"
+labels = ["compiler", "stdlib", "ownership", "native"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/chtholly_result_composition_tests.py", "--chthollyc", "@TARGET_CHTHOLLYC@"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 180
+
+[[test]]
+name = "chtholly_abi2_evidence_contract_tests"
+kind = "process"
+labels = ["abi-2", "evidence", "negative"]
+command = ["@PYTHON@", "@SOURCE_DIR@/tests/abi2_evidence_tests.py", "--script", "@SOURCE_DIR@/scripts/abi2-evidence.py"]
+working_directory = "@BUILD_DIR@/tests"
+timeout_seconds = 30

@@ -1,0 +1,29 @@
+schema = "chtholly-language-surface-v3"
+release = "1.7"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.6.toml"
+
+normative_specs = ["docs/spec/v1.7-language-roadmap.md"]
+
+[[feature]]
+id = "value-blocks-and-switch-statements"
+title = "Lexical value blocks, callable tails, and switch statements"
+scope = "v1.7"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.7-language-roadmap.md#value-blocks-and-callable-results"
+tokens = ["LBrace", "RBrace", "KwUnsafe", "KwSwitch", "FatArrow"]
+nodes = ["ValueBlock", "BlockStmt", "BlockExpr", "SwitchStmt"]
+evidence = ["tests/chtholly_value_block_tests.py"]
+
+[[feature]]
+id = "iterator-algorithms"
+title = "Enumerate, fold, query, and owned Vec collection algorithms"
+scope = "v1.7"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.7-language-roadmap.md#iterator-algorithms"
+tokens = ["KwTrait", "KwWhere", "KwMove", "KwForeach"]
+nodes = ["InterfaceDecl", "ConstraintList", "CallExpr", "ForeachStmt"]
+evidence = ["tests/chtholly_iterator_algorithm_tests.py", "stdlib/iter_algorithms.cns"]

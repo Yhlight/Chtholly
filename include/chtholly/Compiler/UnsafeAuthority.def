@@ -1,0 +1,30 @@
+// This file intentionally has no include guard.
+#ifndef CHTHOLLY_COMPILER_UNSAFE_OPERATION
+#error "Define CHTHOLLY_COMPILER_UNSAFE_OPERATION before including UnsafeAuthority.def"
+#endif
+
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(CallbackAdapterConversion,
+                               InvalidCallbackAdapter,
+                               "callback-adapter-conversion")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(RawPointerDereference,
+                               UnsafePointerDereferenceRequired,
+                               "raw-pointer-dereference")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(ForeignResourceMutation,
+                               UnsafeCallRequired,
+                               "foreign-resource-mutation")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(CallbackAdapterCall, UnsafeCallRequired,
+                               "callback-adapter-call")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(CFunctionPointerCall, UnsafeCallRequired,
+                               "c-function-pointer-call")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(UnsafeFunctionCall, UnsafeCallRequired,
+                               "unsafe-function-call")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(CallbackAdapterConstruction,
+                               UnsafeCallRequired,
+                               "callback-adapter-construction")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(ForeignFunctionReference, UnsafeCallRequired,
+                               "foreign-function-reference")
+CHTHOLLY_COMPILER_UNSAFE_OPERATION(UnionUncheckedMemberAccess,
+                               UnknownActiveUnionMember,
+                               "union-unchecked-member-access")
+
+#undef CHTHOLLY_COMPILER_UNSAFE_OPERATION

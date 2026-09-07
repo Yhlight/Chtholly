@@ -1,0 +1,10 @@
+module vec_loan_ends_before_write;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  let iterator = values.iter();
+  let advanced = (move iterator).next();
+  values.clear();
+  return 0;
+}

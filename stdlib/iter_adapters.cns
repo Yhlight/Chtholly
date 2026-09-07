@@ -1,0 +1,183 @@
+module std::iter::adapters;
+
+import std::callable;
+import std::iter;
+
+pub trait Predicate<Args> {
+  fn test(self: const Self&, args: Args): bool;
+}
+
+pub struct Range {
+  current: i32;
+  end: i32;
+}
+
+pub fn range(start: i32, end: i32): Range {
+  return Range { .current = start, .end = end };
+}
+
+impl std::iter::Iterator for Range {
+  alias Item = i32;
+
+  fn next(self: Self): std::iter::IterationStep<i32, Self> {
+    if (self.current < self.end) {
+      let continuation = Range {
+        .current = self.current + 1,
+        .end = self.end,
+      };
+      return std::iter::IterationStep<i32, Self>::Item {
+        self.current, move continuation
+      };
+    }
+    return std::iter::IterationStep<i32, Self>::Done {};
+  }
+}
+
+pub struct SliceIterator<T> {
+  view: slice<T>;
+  index: u64;
+}
+
+pub fn from_slice<T>(view: slice<T>): SliceIterator<T> {
+  return SliceIterator<T> { .view = copy view, .index = 0u64 };
+}
+
+impl<T> std::iter::Iterator for SliceIterator<T> {
+  alias Item = const T&;
+
+  fn next(self: Self): std::iter::IterationStep<const T&, Self> {
+    if (self.index < self.view.len) {
+      let item = &self.view[self.index];
+      let continuation = SliceIterator<T> {
+        .view = copy self.view,
+        .index = self.index + 1u64,
+      };
+      return std::iter::IterationStep<const T&, Self>::Item {
+        item, move continuation
+      };
+    }
+    return std::iter::IterationStep<const T&, Self>::Done {};
+  }
+}
+
+pub struct Take<I> {
+  iterator: I;
+  remaining: usize;
+}
+
+pub fn take<I>(iterator: I, count: usize): Take<I>
+    where I: std::iter::Iterator {
+  return Take<I> { .iterator = move iterator, .remaining = count };
+}
+
+impl<I> std::iter::Iterator for Take<I> where I: std::iter::Iterator {
+  alias Item = I::Item;
+
+  fn next(self: Self): std::iter::IterationStep<I::Item, Self> {
+    if (self.remaining == 0usize) {
+      return std::iter::IterationStep<I::Item, Self>::Done {};
+    }
+    let step = (move self.iterator).next();
+    return switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done =>
+          std::iter::IterationStep<I::Item, Self>::Done {};
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => std::iter::IterationStep<I::Item, Self>::Item {
+        move item,
+        Take<I> {
+          .iterator = move continuation,
+          .remaining = self.remaining - 1usize,
+        }
+      };
+    };
+  }
+}
+
+pub struct Map<I, F> {
+  iterator: I;
+  function: F;
+}
+
+pub fn map<I, F>(iterator: I, function: F): Map<I, F>
+    where I: std::iter::Iterator,
+          F: std::callable::Invoke<(I::Item,)> {
+  return Map<I, F> { .iterator = move iterator, .function = move function };
+}
+
+impl<I, F> std::iter::Iterator for Map<I, F>
+    where I: std::iter::Iterator,
+          F: std::callable::Invoke<(I::Item,)> {
+  alias Item = F::Output;
+
+  fn next(self: Self): std::iter::IterationStep<F::Output, Self> {
+    let step = (move self.iterator).next();
+    return switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done =>
+          std::iter::IterationStep<F::Output, Self>::Done {};
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        let output = self.function.invoke((move item,));
+        std::iter::IterationStep<F::Output, Self>::Item {
+          move output,
+          Map<I, F> {
+            .iterator = move continuation,
+            .function = move self.function,
+          }
+        }
+      };
+    };
+  }
+}
+
+pub struct Filter<I, P> {
+  iterator: I;
+  predicate: P;
+}
+
+pub fn filter<I, P>(iterator: I, predicate: P): Filter<I, P>
+    where I: std::iter::Iterator,
+          P: Predicate<(I::Item,)> {
+  return Filter<I, P> {
+    .iterator = move iterator,
+    .predicate = move predicate,
+  };
+}
+
+impl<I, P> std::iter::Iterator for Filter<I, P>
+    where I: std::iter::Iterator,
+          P: Predicate<(I::Item,)> {
+  alias Item = I::Item;
+
+  fn next(self: Self): std::iter::IterationStep<I::Item, Self> {
+    var iterator = move self.iterator;
+    let predicate = move self.predicate;
+    while (true) {
+      let step = (move iterator).next();
+      switch (step) {
+        std::iter::IterationStep<I::Item, I>::Done => {
+          return std::iter::IterationStep<I::Item, Self>::Done {};
+        };
+        std::iter::IterationStep<I::Item, I>::Item {
+          item = move .0,
+          continuation = move .1
+        } => {
+          iterator = move continuation;
+          if (predicate.test((copy item,))) {
+            return std::iter::IterationStep<I::Item, Self>::Item {
+              move item,
+              Filter<I, P> {
+                .iterator = move iterator,
+                .predicate = move predicate,
+              }
+            };
+          }
+          continue;
+        };
+      };
+    }
+  }
+}

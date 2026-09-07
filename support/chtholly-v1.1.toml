@@ -1,0 +1,53 @@
+schema = "chtholly-language-surface-v3"
+release = "1.1"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.toml"
+
+admitted_compatibility_spellings = ["async fn "]
+
+normative_specs = [
+  "docs/spec/v1.1-language-roadmap.md",
+  "docs/spec/concurrency-and-atomic-memory.md",
+  "docs/spec/async-and-hosted-program-model.md",
+]
+
+[[feature]]
+id = "concurrency-memory-boundary"
+title = "Atomic, volatile, and concurrency memory boundary"
+scope = "v1.1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/concurrency-and-atomic-memory.md#source-surface"
+evidence = [
+  "tests/chtholly_feature_matrix_tests.py",
+  "tests/chtholly_language_version_tests.py",
+  "tests/chtholly_host_runtime_tests.cpp",
+  "tests/chtholly_stdlib_llvm_fixture_tests.cpp",
+]
+
+[[feature]]
+id = "async-syntax"
+title = "Public async and coroutine syntax"
+scope = "v1.1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/async-and-hosted-program-model.md#source-surface"
+evidence = [
+  "tests/chtholly_feature_matrix_tests.py",
+  "tests/chtholly_language_version_tests.py",
+  "tests/chtholly_project_workflow_tests.py",
+  "tests/chtholly_host_runtime_tests.cpp",
+]
+
+[[feature]]
+id = "async-program-model-extension"
+title = "Hosted asynchronous entry and structured task execution"
+scope = "v1.1"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/async-and-hosted-program-model.md#hosted-entry"
+evidence = [
+  "tests/chtholly_feature_matrix_tests.py",
+  "tests/chtholly_language_version_tests.py",
+]

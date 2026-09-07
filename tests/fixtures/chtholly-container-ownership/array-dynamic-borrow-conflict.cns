@@ -1,0 +1,10 @@
+module array_dynamic_borrow_conflict;
+
+fn probe(index: i32): i32 {
+  var values: i32[2] = [10, 20];
+  let borrowed = &values[index];
+  let conflicting = &values[0];
+  return borrowed + conflicting;
+}
+
+fn main(): i32 { return probe(0); }

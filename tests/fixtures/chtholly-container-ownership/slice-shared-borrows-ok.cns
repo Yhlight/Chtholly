@@ -1,0 +1,11 @@
+module slice_shared_borrows_ok;
+
+fn probe(index: i32): i32 {
+  var values: i32[2] = [10, 20];
+  let view = values[..];
+  let borrowed = &view[index];
+  let overlapping = &view[0];
+  return borrowed + overlapping;
+}
+
+fn main(): i32 { return probe(0); }

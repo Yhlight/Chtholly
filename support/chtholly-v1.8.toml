@@ -1,0 +1,18 @@
+schema = "chtholly-language-surface-v3"
+release = "1.8"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.7.toml"
+
+normative_specs = ["docs/spec/v1.8-language-roadmap.md"]
+
+[[feature]]
+id = "fieldless-value-enums"
+title = "Fieldless value enums with explicit i32 discriminants"
+scope = "v1.8"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.8-language-roadmap.md#declaration-and-values"
+tokens = ["KwEnum", "Equal", "IntegerLiteral", "Colon", "KwAs"]
+nodes = ["EnumDecl", "EnumVariant", "EnumDiscriminant", "QualifiedName", "CastExpr"]
+evidence = ["tests/chtholly_value_enum_tests.py"]

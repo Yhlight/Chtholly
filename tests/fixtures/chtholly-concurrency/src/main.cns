@@ -1,0 +1,30 @@
+module concurrency_smoke;
+
+import std::atomic;
+import std::volatile;
+
+fn volatile_read(address: const i32*): i32 {
+  unsafe { return std::volatile::load(address); }
+}
+
+fn volatile_write(address: i32*, value: i32): void {
+  unsafe { std::volatile::store(address, value); }
+  return;
+}
+
+fn main(): i32 {
+  let value = std::atomic::Atomic<i32>::init(1i32);
+  let loaded = value.load(std::atomic::Ordering::Relaxed);
+  value.store(2i32, std::atomic::Ordering::Release);
+  let exchanged = value.exchange(3i32, std::atomic::Ordering::AcqRel);
+  let fetched = value.fetch_add(4i32, std::atomic::Ordering::SeqCst);
+  let compared = value.compare_exchange(
+      7i32, 9i32, std::atomic::Ordering::SeqCst,
+      std::atomic::Ordering::Acquire);
+  return if (loaded == 1i32 && exchanged == 2i32 && fetched == 3i32 &&
+             compared.observed == 7i32 && compared.exchanged) {
+    42
+  } else {
+    1
+  };
+}

@@ -1,0 +1,42 @@
+module std::log;
+
+import std::error;
+import std::io;
+import std::result;
+
+pub enum Level {
+  Error,
+  Warn,
+  Info,
+  Debug,
+  Trace,
+}
+
+pub fn emit(level: Level, message: string):
+    std::result::Result<usize, std::error::ErrorCode> {
+  // Level remains an explicit source value; formatting/structured sinks are
+  // intentionally deferred until the text builder and sink contracts exist.
+  // The first sink writes the caller's already-formatted message.
+  return switch (level) {
+    Level::Error => std::io::write_stderr_error(message);
+    Level::Warn => std::io::write_stderr_error(message);
+    Level::Info => std::io::write_stderr_error(message);
+    Level::Debug => std::io::write_stderr_error(message);
+    Level::Trace => std::io::write_stderr_error(message);
+  };
+}
+
+pub fn error(message: string):
+    std::result::Result<usize, std::error::ErrorCode> {
+  return emit(Level::Error, message);
+}
+
+pub fn warn(message: string):
+    std::result::Result<usize, std::error::ErrorCode> {
+  return emit(Level::Warn, message);
+}
+
+pub fn info(message: string):
+    std::result::Result<usize, std::error::ErrorCode> {
+  return emit(Level::Info, message);
+}

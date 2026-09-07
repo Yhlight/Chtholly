@@ -1,0 +1,6 @@
+[package]
+name = "telemetry-model"
+language = "1.9"
+
+[build]
+module_paths = ["src"]

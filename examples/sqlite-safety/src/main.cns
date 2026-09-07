@@ -1,0 +1,44 @@
+module main;
+
+import sqlite;
+import std::result;
+
+fn close_status(database: sqlite::Database): i32 {
+  unsafe {
+    let closed = sqlite::chtholly_sqlite_close(move database);
+    return switch (closed) {
+      std::result::Result<void, i32>::Ok { .. } => 0i32;
+      std::result::Result<void, i32>::Err { error = copy .0 } => error;
+    };
+  }
+}
+
+fn open_memory(): i32 {
+  unsafe {
+    let database = sqlite::chtholly_sqlite_open_memory();
+    return close_status(move database);
+  }
+}
+
+fn open_invalid(): i32 {
+  unsafe {
+    let opened = sqlite::chtholly_sqlite_open_invalid();
+    return switch (opened) {
+      std::result::Result<void, i32>::Ok { .. } => 20i32;
+      std::result::Result<void, i32>::Err { .. } => 0i32;
+    };
+  }
+}
+
+fn main(): i32 {
+  unsafe {
+    if (sqlite::chtholly_sqlite_version() <= 0i32) {
+      return 1i32;
+    }
+  }
+  let memory_status = open_memory();
+  if (memory_status != 0i32) {
+    return memory_status;
+  }
+  return open_invalid();
+}

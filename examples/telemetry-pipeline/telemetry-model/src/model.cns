@@ -1,0 +1,31 @@
+module telemetry::model;
+
+pub struct Sample {
+  pub sensor: i32;
+  pub value: i32;
+}
+
+pub fn sample(sensor: i32, value: i32): Sample {
+  return Sample { .sensor = sensor, .value = value };
+}
+
+pub fn sample_pair(): Sample[2] {
+  return [sample(1, 7), sample(2, 11)];
+}
+
+pub struct Summary {
+  pub count: i32;
+  pub sum: i64;
+  pub minimum: i32;
+  pub maximum: i32;
+}
+
+pub fn summary(count: i32, sum: i64, minimum: i32,
+               maximum: i32): Summary {
+  return Summary {
+    .count = count,
+    .sum = sum,
+    .minimum = minimum,
+    .maximum = maximum,
+  };
+}

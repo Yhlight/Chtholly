@@ -1,0 +1,20 @@
+module std::option;
+
+pub enum Option<T> {
+  Some { T },
+  None,
+}
+
+impl<T> Option<T> {
+  pub fn is_some(self: const Option<T>&): bool contract {}
+  pub fn is_none(self: const Option<T>&): bool contract {}
+  pub fn as_ref(self: const Option<T>&): Option<const T&> contract {
+    borrows shared self;
+    returns borrow self;
+  }
+  pub fn as_mut(self: Option<T>&): Option<T&> contract {
+    borrows mutable self;
+    returns borrow self;
+  }
+  pub fn unwrap(self: Option<T>): T contract {}
+}

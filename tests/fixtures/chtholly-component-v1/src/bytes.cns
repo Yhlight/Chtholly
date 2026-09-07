@@ -1,0 +1,5 @@
+module component::bytes;
+
+pub fn probe(data: slice<u8>): u64 {
+  return 7u64;
+}

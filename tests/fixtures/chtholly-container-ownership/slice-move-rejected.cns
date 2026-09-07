@@ -1,0 +1,7 @@
+module slice_move_rejected;
+
+fn main(): i32 {
+  let values: i32[2] = [10, 20];
+  let view = values[..];
+  return move view[0];
+}

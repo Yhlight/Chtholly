@@ -1,0 +1,27 @@
+module main;
+import std::env;
+import telemetry::file_pipeline;
+
+import telemetry::pipeline;
+import std::io;
+import std::error;
+import std::log;
+import std::result;
+import std::net;
+
+fn main(): i32 {
+  if (std::env::arg_count() == 3usize) {
+    return telemetry::file_pipeline::run(std::env::arg(1usize), std::env::arg(2usize));
+  }
+  let status = telemetry::pipeline::run();
+  if (status == 0) {
+    std::io::write_stdout("telemetry pipeline: ok\n");
+    let logged = std::log::info("telemetry pipeline: ok\n");
+    switch (logged) {
+      std::result::Result<usize, std::error::ErrorCode>::Ok { .. } => {}
+      std::result::Result<usize, std::error::ErrorCode>::Err { .. } =>
+        return 2;
+    }
+  }
+  return status;
+}

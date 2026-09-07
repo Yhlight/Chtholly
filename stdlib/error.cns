@@ -1,0 +1,113 @@
+module std::error;
+
+import std::ops;
+
+pub enum Domain {
+  Generic,
+  Io,
+  Net,
+  Sync,
+  Log,
+  Timeout,
+  Cancelled,
+}
+
+pub struct ErrorCode {
+  pub domain: Domain;
+  pub code: i32;
+}
+
+pub fn from_errno(value: i32): ErrorCode {
+  return ErrorCode { .domain = Domain::Io, .code = value };
+}
+
+pub fn from_win32(value: u32): ErrorCode {
+  return ErrorCode { .domain = Domain::Io, .code = value as i32 };
+}
+
+pub fn from_net(value: i32): ErrorCode {
+  return ErrorCode { .domain = Domain::Net, .code = value };
+}
+
+pub fn from_sync(value: i32): ErrorCode {
+  return ErrorCode { .domain = Domain::Sync, .code = value };
+}
+
+pub fn from_timeout(value: i32): ErrorCode {
+  return ErrorCode { .domain = Domain::Timeout, .code = value };
+}
+
+pub fn from_cancelled(value: i32): ErrorCode {
+  return ErrorCode { .domain = Domain::Cancelled, .code = value };
+}
+
+pub fn is_timeout(error: const ErrorCode&): bool {
+  return switch (error.domain) {
+    Domain::Timeout => true;
+    _ => false;
+  };
+}
+
+pub fn is_sync(error: const ErrorCode&): bool {
+  return switch (error.domain) {
+    Domain::Sync => true;
+    _ => false;
+  };
+}
+
+pub fn is_cancelled(error: const ErrorCode&): bool {
+  return switch (error.domain) {
+    Domain::Cancelled => true;
+    _ => false;
+  };
+}
+
+pub fn is_invalid_handle(error: const ErrorCode&): bool {
+  return error.code == -2704i32;
+}
+
+pub fn is_out_of_memory(error: const ErrorCode&): bool {
+  return error.code == -2703i32;
+}
+
+pub fn is_closed(error: const ErrorCode&): bool {
+  return error.code == -2707i32 || error.code == -2805i32;
+}
+
+pub fn is_retryable(error: const ErrorCode&): bool {
+  if (error.code == 11i32) { return true; }
+  return switch (error.domain) {
+    Domain::Timeout => true;
+    _ => false;
+  };
+}
+
+pub fn domain_text(error: const ErrorCode&): string {
+  return switch (error.domain) {
+    Domain::Generic => "generic";
+    Domain::Io => "io";
+    Domain::Net => "net";
+    Domain::Sync => "sync";
+    Domain::Log => "log";
+    Domain::Timeout => "timeout";
+    Domain::Cancelled => "cancelled";
+  };
+}
+
+pub fn code_text(error: const ErrorCode&): string {
+  if (error.code == -2701i32) { return "invalid-argument"; }
+  if (error.code == -2702i32) { return "io-failure"; }
+  if (error.code == -2703i32) { return "out-of-memory"; }
+  if (error.code == -2704i32) { return "invalid-handle"; }
+  if (error.code == -2705i32) { return "cancelled"; }
+  if (error.code == -2707i32 || error.code == -2805i32) {
+    return "closed";
+  }
+  if (error.code == -2804i32) { return "timeout"; }
+  if (error.code == -2806i32) { return "reset"; }
+  return "error";
+}
+
+pub fn map_domain(error: const ErrorCode&, domain: Domain): ErrorCode {
+  return ErrorCode { .domain = domain, .code = error.code };
+}

@@ -1,0 +1,11 @@
+module std::iter;
+
+pub enum IterationStep<Item, Continuation> {
+  Item { Item, Continuation },
+  Done,
+}
+
+pub trait Iterator {
+  alias Item;
+  fn next(self: Self): IterationStep<Self::Item, Self>;
+}

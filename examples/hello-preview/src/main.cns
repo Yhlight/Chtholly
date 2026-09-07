@@ -1,0 +1,14 @@
+module main;
+
+import std::env;
+import std::io;
+
+fn main(): i32 {
+  std::io::write_stdout("Hello from Chtholly 0.2.0-preview\n");
+  if (std::env::arg_count() > 1usize) {
+    std::io::write_stdout("argument: ");
+    std::io::write_stdout(std::env::arg(1usize));
+    std::io::write_stdout("\n");
+  }
+  return 0;
+}

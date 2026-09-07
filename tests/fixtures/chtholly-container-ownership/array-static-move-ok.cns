@@ -1,0 +1,7 @@
+module array_static_move_ok;
+
+fn main(): i32 {
+  let values: i32[2] = [10, 20];
+  let first = move values[0];
+  return values[1] + first;
+}

@@ -1,0 +1,19 @@
+module token_wrappers;
+
+import token_provider;
+
+pub fn acquire_through_provider(token: token_provider::Token&): i32 {
+  unsafe {
+    return token_provider::acquire(token);
+  }
+}
+
+pub fn acquire_through_generic<Marker>(
+    token: token_provider::Token&, marker: Marker): i32 {
+  return acquire_through_provider(token);
+}
+
+pub fn acquire_through_wrapper<Marker>(
+    token: token_provider::Token&, marker: Marker): i32 {
+  return acquire_through_generic(token, marker);
+}

@@ -1,0 +1,15 @@
+module plugin;
+
+// Beta is rebuilt independently in the soak fixture; this result is its
+// observable application behavior while the Component ABI remains unchanged.
+pub fn process(value: i32): i32 {
+  return value + 2;
+}
+
+pub fn hold(iterations: u64): u64 {
+  var current = 0u64;
+  while (current < iterations) {
+    current += 1u64;
+  }
+  return current;
+}

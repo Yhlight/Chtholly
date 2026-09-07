@@ -1,0 +1,14 @@
+[package]
+name = "app"
+language = "1.0"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]
+
+[dependencies]
+facade = { path = "../facade" }
+leaf-a = { path = "../leaf-a" }
+leaf-b = { path = "../leaf-b" }
+leaf-c = { path = "../leaf-c" }
+leaf-d = { path = "../leaf-d" }

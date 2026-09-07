@@ -1,0 +1,8 @@
+module std::compare;
+
+pub enum Ordering {
+  Less,
+  Equal,
+  Greater,
+  Unordered,
+}

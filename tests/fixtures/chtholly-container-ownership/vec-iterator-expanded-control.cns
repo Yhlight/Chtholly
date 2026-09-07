@@ -1,0 +1,25 @@
+module vec_iterator_expanded_control;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(7);
+  let iterator = values.iter();
+  let step = (move iterator).next();
+  return switch (step) {
+    std::vec::VecIterStep<i32>::Done => 1;
+    std::vec::VecIterStep<i32>::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      defer { let cleanup_marker = 0; }
+      if (item != 7) { return 2; }
+      let final_step = (move continuation).next();
+      let final_result = switch (final_step) {
+        std::vec::VecIterStep<i32>::Done => 0;
+        std::vec::VecIterStep<i32>::Item { .. } => 3;
+      };
+      final_result
+    };
+  };
+}

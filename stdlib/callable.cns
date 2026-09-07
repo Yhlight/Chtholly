@@ -1,0 +1,16 @@
+module std::callable;
+
+pub trait Invoke<Args> {
+  alias Output;
+  pub fn invoke(self: const Self&, args: Args): Output;
+}
+
+pub trait InvokeMut<Args> {
+  alias Output;
+  pub fn invoke(self: Self&, args: Args): Output;
+}
+
+pub trait InvokeOnce<Args> {
+  alias Output;
+  pub fn invoke(self: Self, args: Args): Output;
+}

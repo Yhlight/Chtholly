@@ -1,0 +1,7 @@
+add_subdirectory(Core)
+add_subdirectory(Compiler)
+add_subdirectory(Basic)
+add_subdirectory(Support)
+add_subdirectory(ToolingRules)
+add_subdirectory(Driver)
+add_subdirectory(Testing)

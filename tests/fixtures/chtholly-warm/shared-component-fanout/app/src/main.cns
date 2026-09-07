@@ -1,0 +1,23 @@
+module app;
+import facade;
+import leaf_a;
+import leaf_b;
+import leaf_c;
+import leaf_d;
+
+fn use_a(): i32 { return facade::relay_a(1); }
+fn use_b(): i32 { return facade::relay_b(2); }
+fn use_c(): i32 { return facade::relay_c(3); }
+fn use_d(): i32 { return facade::relay_d(4); }
+fn use_e(): i32 { return facade::relay_e(5); }
+fn use_f(): i32 { return facade::relay_f(6); }
+fn use_g(): i32 { return facade::relay_g(7); }
+fn use_h(): i32 { return facade::relay_h(8); }
+fn use_i(): i32 { return facade::relay_i(9); }
+fn use_j(): i32 { return facade::relay_j(10); }
+fn use_k(): i32 { return facade::relay_k(11); }
+
+fn main(): i32 {
+  return facade::relay_l(42) + leaf_a::marker() + leaf_b::marker() +
+      leaf_c::marker() + leaf_d::marker();
+}

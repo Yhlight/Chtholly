@@ -1,0 +1,12 @@
+{
+  "name": "Chtholly CFDL",
+  "scopeName": "source.chtholly.cfdl",
+  "patterns": [
+    {"name": "comment.line.double-slash.cfdl", "begin": "//", "end": "$"},
+    {"name": "keyword.control.cfdl", "match": "\\b(?:foreign|fn|import|module|type|enum|union|link|call|where|owned|ref|ref_mut|view|view_mut|move|out|inout|escapes|stores|derives|invokes|obliges|discharges|requires|invalid)\\b"},
+    {"name": "support.constant.cfdl", "match": "\\b(?:c|win64|sysv64)\\b"},
+    {"name": "string.quoted.double.cfdl", "begin": "\"", "end": "\"", "patterns": [{"name": "constant.character.escape.cfdl", "match": "\\\\[\\\\\"]"}]},
+    {"name": "constant.language.cfdl", "match": "\\bnull\\b"},
+    {"name": "storage.type.primitive.cfdl", "match": "\\b(?:bool|f32|f64|i8|i16|i32|i64|u8|u16|u32|u64|void|array|c_bool|c_char|c_schar|c_uchar|c_short|c_ushort|c_int|c_uint|c_long|c_ulong|c_long_long|c_ulong_long|c_size|c_ptrdiff|c_wchar)\\b"}
+  ]
+}

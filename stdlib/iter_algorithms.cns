@@ -1,0 +1,132 @@
+module std::iter::algorithms;
+
+import std::callable;
+import std::iter;
+import std::iter::adapters;
+import std::vec;
+
+pub trait Folder<Accumulator, Item> {
+  fn combine(self: const Self&, accumulator: Accumulator,
+             item: Item): Accumulator;
+}
+
+
+pub struct Enumerate<I> {
+  iterator: I;
+  index: usize;
+}
+
+pub fn enumerate<I>(iterator: I): Enumerate<I>
+    where I: std::iter::Iterator {
+  return Enumerate<I> { .iterator = move iterator, .index = 0usize };
+}
+
+impl<I> std::iter::Iterator for Enumerate<I> where I: std::iter::Iterator {
+  alias Item = (usize, I::Item);
+
+  fn next(self: Self): std::iter::IterationStep<(usize, I::Item), Self> {
+    let step = (move self.iterator).next();
+    return switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done =>
+          std::iter::IterationStep<(usize, I::Item), Self>::Done {};
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => std::iter::IterationStep<(usize, I::Item), Self>::Item {
+        (self.index, move item),
+        Enumerate<I> {
+          .iterator = move continuation,
+          .index = self.index + 1usize,
+        }
+      };
+    };
+  }
+}
+
+pub fn fold<I, A, F>(iterator: I, initial: A, folder: F): A
+    where I: std::iter::Iterator,
+          F: Folder<A, I::Item> {
+  var remaining = move iterator;
+  var accumulator = move initial;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => {
+        return move accumulator;
+      };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        accumulator = folder.combine(move accumulator, move item);
+        continue;
+      };
+    };
+  }
+}
+
+pub fn any<I, P>(iterator: I, predicate: P): bool
+    where I: std::iter::Iterator,
+          P: std::iter::adapters::Predicate<(I::Item,)> {
+  var remaining = move iterator;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => { return false; };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        if (predicate.test((move item,))) { return true; }
+        continue;
+      };
+    };
+  }
+}
+
+pub fn all<I, P>(iterator: I, predicate: P): bool
+    where I: std::iter::Iterator,
+          P: std::iter::adapters::Predicate<(I::Item,)> {
+  var remaining = move iterator;
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => { return true; };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        if (predicate.test((move item,))) {
+          continue;
+        } else {
+          return false;
+        }
+      };
+    };
+  }
+}
+
+pub fn collect_vec<I>(iterator: I): std::vec::Vec<I::Item>
+    where I: std::iter::Iterator {
+  var remaining = move iterator;
+  var result = std::vec::Vec<I::Item>::init();
+  while (true) {
+    let step = (move remaining).next();
+    switch (step) {
+      std::iter::IterationStep<I::Item, I>::Done => {
+        return move result;
+      };
+      std::iter::IterationStep<I::Item, I>::Item {
+        item = move .0,
+        continuation = move .1
+      } => {
+        remaining = move continuation;
+        result.push(move item);
+        continue;
+      };
+    };
+  }
+}

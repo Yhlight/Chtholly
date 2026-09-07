@@ -1,0 +1,87 @@
+module telemetry::file_pipeline;
+import std::fs;
+import std::result;
+import std::error;
+import std::io;
+import std::callable;
+import std::vec;
+import std::typed_channel;
+import telemetry::wire;
+
+alias Status = std::result::Result<void, std::error::ErrorCode>;
+alias Frame = telemetry::wire::Frame;
+alias Channel = std::typed_channel::Channel<Frame>;
+struct SendFailure {}
+impl std::callable::InvokeOnce<(std::typed_channel::SendError<Frame>,)> for SendFailure {
+  alias Output = std::error::ErrorCode;
+  fn invoke(self: Self, args: (std::typed_channel::SendError<Frame>,)): std::error::ErrorCode {
+    return args.0.error;
+  }
+}
+fn invalid_frame(code: i32): Status {
+  return Status::Err { std::error::from_errno(code) };
+}
+fn process(input: std::fs::File&, output: std::fs::File&): Status {
+  var frames = std::vec::Vec<Frame>::init();
+  var channel = Channel::empty();
+  channel.init(1u64)?;
+  while (true) {
+    var bytes: u8[36] = [
+      0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,
+      0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,
+      0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8,0u8
+    ];
+    var count = 0u64;
+    while (count < 36u64) {
+      let view: slice_mut<u8> = bytes[count..];
+      let read = std::fs::read(input, view)?;
+      if (read == 0usize) {
+        if (count == 0u64) { break; }
+        return invalid_frame(-2901);
+      }
+      count += read as u64;
+    }
+    if (count == 0u64) { break; }
+    let decoded = telemetry::wire::decode(bytes);
+    let frame = switch (decoded) {
+      std::result::Result<Frame, telemetry::wire::FrameError>::Ok { value = move .0 } => move value;
+      std::result::Result<Frame, telemetry::wire::FrameError>::Err { .. } => { return invalid_frame(-2902); };
+    };
+    std::result::map_error(channel.send(move frame), SendFailure {})?;
+    frames.push(channel.receive()?);
+  }
+  foreach (let frame: const Frame& in frames.iter()) {
+    let bytes = telemetry::wire::encode(frame);
+    std::fs::write_all(output, bytes[..])?;
+  }
+  (move channel).close()?;
+  return Status::Ok {};
+}
+
+pub fn run(input_path: string, output_path: string): i32 {
+  let opened = std::fs::open_read(input_path);
+  var input = switch (opened) {
+    std::result::Result<std::fs::File, std::error::ErrorCode>::Ok { value = move .0 } => move value;
+    std::result::Result<std::fs::File, std::error::ErrorCode>::Err { .. } => { return 10; };
+  };
+  let created = std::fs::create(output_path);
+  var output = switch (created) {
+    std::result::Result<std::fs::File, std::error::ErrorCode>::Ok { value = move .0 } => move value;
+    std::result::Result<std::fs::File, std::error::ErrorCode>::Err { .. } => {
+      let close = std::fs::close(move input);
+      switch (close) { Status::Ok { .. } => {} Status::Err { .. } => std::io::write_stderr("input close failed\n"); }
+      return 11;
+    };
+  };
+  let result = process(&input, &output);
+  let input_close = std::fs::close(move input);
+  let output_close = std::fs::close(move output);
+  var close_failed = false;
+  switch (input_close) { Status::Ok { .. } => {} Status::Err { .. } => { close_failed = true; } }
+  switch (output_close) { Status::Ok { .. } => {} Status::Err { .. } => { close_failed = true; } }
+  if (close_failed) { std::io::write_stderr("file close failed\n"); }
+  return switch (result) {
+    Status::Ok { .. } => if (close_failed) { 13 } else { 0 };
+    Status::Err { .. } => 12;
+  };
+}

@@ -1,0 +1,33 @@
+schema = "chtholly-cffi-tier1-v1"
+required_targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"]
+test_manifest = "chtholly_cffi_tool_tests"
+
+[[case]]
+id = "sqlite-upgrade"
+provider_headers = ["tests/fixtures/cffi/upgrades/sqlite/3.40.1/sqlite3.h", "tests/fixtures/cffi/upgrades/sqlite/3.53.4/sqlite3.h"]
+markers = ["sqlite_upgrade", "c_sqlite_open_invalid", "sqlite3_is_interrupted"]
+capabilities = ["generate", "regenerate", "verify", "independent-consumer", "native-failure", "warm-reuse"]
+
+[[case]]
+id = "zlib-upgrade"
+provider_headers = ["tests/fixtures/cffi/upgrades/zlib/1.2.11/zlib.h", "tests/fixtures/cffi/upgrades/zlib/1.3.1/zlib.h"]
+markers = ["zlib_upgrade", "zlib_corrupt", "zlibCompileFlags"]
+capabilities = ["generate", "regenerate", "verify", "independent-consumer", "native-failure", "warm-reuse"]
+
+[[case]]
+id = "libcurl-upgrade"
+provider_headers = ["tests/fixtures/cffi/upgrades/curl/7.88.1/curl.h", "tests/fixtures/cffi/upgrades/curl/8.12.1/curl.h"]
+markers = ["curl_upgrade", "curl_easy_pause", "c_curl_perform_invalid"]
+capabilities = ["generate", "regenerate", "verify", "independent-consumer", "native-failure", "warm-reuse"]
+
+[[case]]
+id = "linux-posix-outcomes"
+provider_headers = ["tests/fixtures/cffi/fixture.h"]
+markers = ["posix_read", "c_posix_read_into", "fread"]
+capabilities = ["sysroot", "runtime-closure", "errno", "outcome", "malformed-contract"]
+
+[[case]]
+id = "windows-sdk-outcomes"
+provider_headers = ["tests/fixtures/cffi/fixture.h"]
+markers = ["c_bcrypt_get_property_invalid", "win32_read", "c_win32_read_invalid_handle"]
+capabilities = ["msvc-sdk", "win32", "out-result", "invalid-property", "insufficient-buffer"]

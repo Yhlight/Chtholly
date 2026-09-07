@@ -1,0 +1,8 @@
+[package]
+name = "chtholly-1-9-staged-negative"
+language = "1.9"
+
+[build]
+entry = "main.cns"
+module_paths = ["."]
+

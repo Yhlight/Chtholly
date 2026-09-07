@@ -1,0 +1,9 @@
+[component]
+identity = "org.chtholly.examples.telemetry-pipeline.component"
+version = "0.1.0"
+target = "x86_64-pc-windows-msvc"
+runtime = "v1"
+
+# Filled by the deployment test/release step after the component contract is
+# built. The loader still verifies the digest against the adjacent contract.
+contract_digest = "<generated-from-contract>"

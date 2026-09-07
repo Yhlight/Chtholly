@@ -1,0 +1,157 @@
+module std::fs;
+
+import std::error;
+import std::host;
+import std::result;
+import std::text;
+
+pub alias File = std::host::Handle;
+
+pub fn open(path: string):
+    std::result::Result<File, std::error::ErrorCode> {
+  let bytes = std::text::as_bytes(path);
+  var handle: File;
+  let status = unsafe {
+    std::host::host_open(std::text::slice_data(bytes), bytes.len, handle)
+  };
+  if (status != 0) {
+    return std::result::Result<File, std::error::ErrorCode>::Err {
+      std::error::from_errno(status)
+    };
+  }
+  return std::result::Result<File, std::error::ErrorCode>::Ok { move handle };
+}
+
+pub fn close(file: File):
+    std::result::Result<void, std::error::ErrorCode> {
+  let status = unsafe { std::host::host_close(move file) };
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_errno(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn read(file: File&, buffer: slice_mut<u8>):
+    std::result::Result<usize, std::error::ErrorCode> {
+  let count = unsafe {
+    std::host::host_read(&file, std::text::slice_data_mut(buffer), buffer.len)
+  };
+  if (count < 0i64) {
+    return std::result::Result<usize, std::error::ErrorCode>::Err {
+      std::error::from_errno(count as i32)
+    };
+  }
+  return std::result::Result<usize, std::error::ErrorCode>::Ok {
+    count as usize
+  };
+}
+
+// Returns false for a missing or invalid path.
+pub fn exists(path: string): bool;
+
+// Truncates or creates a file and returns bytes written, or -1 on failure.
+pub fn write(path: string, contents: string): i64;
+
+// Removes a file and returns zero on success, or -1 on failure.
+pub fn remove(path: string): i32;
+
+pub fn write_result(path: string,
+                    contents: string): std::result::Result<usize, i32> {
+  let written = write(path, contents);
+  if (written < 0i64) {
+    return std::result::Result<usize, i32>::Err { written as i32 };
+  }
+  return std::result::Result<usize, i32>::Ok { written as usize };
+}
+
+pub fn remove_result(path: string): std::result::Result<i32, i32> {
+  let status = remove(path);
+  if (status != 0) {
+    return std::result::Result<i32, i32>::Err { status };
+  }
+  return std::result::Result<i32, i32>::Ok { 0 };
+}
+
+pub fn write_error(path: string, contents: string):
+    std::result::Result<usize, std::error::ErrorCode> {
+  let written = write(path, contents);
+  if (written < 0i64) {
+    return std::result::Result<usize, std::error::ErrorCode>::Err {
+      std::error::from_errno(written as i32)
+    };
+  }
+  return std::result::Result<usize, std::error::ErrorCode>::Ok {
+    written as usize
+  };
+}
+
+pub fn remove_error(path: string):
+    std::result::Result<i32, std::error::ErrorCode> {
+  let status = remove(path);
+  if (status != 0) {
+    return std::result::Result<i32, std::error::ErrorCode>::Err {
+      std::error::from_errno(status)
+    };
+  }
+  return std::result::Result<i32, std::error::ErrorCode>::Ok { 0 };
+}
+pub fn open_read(path: string):
+    std::result::Result<File, std::error::ErrorCode> {
+  let bytes = std::text::as_bytes(path);
+  var handle: File;
+  let status = unsafe {
+    std::host::host_open_read(std::text::slice_data(bytes), bytes.len, handle)
+  };
+  if (status != 0) {
+    return std::result::Result<File, std::error::ErrorCode>::Err {
+      std::error::from_errno(status)
+    };
+  }
+  return std::result::Result<File, std::error::ErrorCode>::Ok { move handle };
+}
+
+pub fn create(path: string):
+    std::result::Result<File, std::error::ErrorCode> {
+  let bytes = std::text::as_bytes(path);
+  var handle: File;
+  let status = unsafe {
+    std::host::host_create(std::text::slice_data(bytes), bytes.len, handle)
+  };
+  if (status != 0) {
+    return std::result::Result<File, std::error::ErrorCode>::Err {
+      std::error::from_errno(status)
+    };
+  }
+  return std::result::Result<File, std::error::ErrorCode>::Ok { move handle };
+}
+
+
+pub fn write_bytes(file: File&, buffer: const slice<u8>):
+    std::result::Result<usize, std::error::ErrorCode> {
+  let count = unsafe {
+    std::host::host_write(&file, std::text::slice_data(buffer), buffer.len)
+  };
+  if (count < 0i64) {
+    return std::result::Result<usize, std::error::ErrorCode>::Err {
+      std::error::from_errno(count as i32)
+    };
+  }
+  return std::result::Result<usize, std::error::ErrorCode>::Ok { count as usize };
+}
+
+pub fn write_all(file: File&, buffer: const slice<u8>):
+    std::result::Result<void, std::error::ErrorCode> {
+  var offset = 0u64;
+  while (offset < buffer.len) {
+    let written = write_bytes(file, buffer[offset..])?;
+    if (written == 0usize) {
+      return std::result::Result<void, std::error::ErrorCode>::Err {
+        std::error::from_errno(-2702i32)
+      };
+    }
+    offset += written as u64;
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}

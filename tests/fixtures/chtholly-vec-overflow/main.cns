@@ -1,0 +1,9 @@
+module main;
+
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.reserve(18446744073709551615usize);
+  return 0;
+}

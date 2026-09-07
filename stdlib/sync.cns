@@ -1,0 +1,118 @@
+module std::sync;
+
+import std::error;
+import std::result;
+import std::sync::raw;
+
+pub alias Mutex = std::sync::raw::Mutex;
+pub alias Condvar = std::sync::raw::Condvar;
+
+pub fn init(): std::result::Result<Mutex, std::error::ErrorCode> {
+  var mutex: Mutex;
+  var status = 0i32;
+  unsafe { status = std::sync::raw::mutex_init(mutex); }
+  if (status != 0) {
+    return std::result::Result<Mutex, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<Mutex, std::error::ErrorCode>::Ok { move mutex };
+}
+
+pub fn lock(mutex: Mutex&):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::mutex_lock(&mutex); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn unlock(mutex: Mutex&):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::mutex_unlock(&mutex); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn close(mutex: Mutex):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::mutex_close(move mutex); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn condvar_init(): std::result::Result<Condvar, std::error::ErrorCode> {
+  var condition: Condvar;
+  var status = 0i32;
+  unsafe { status = std::sync::raw::condvar_init(condition); }
+  if (status != 0) {
+    return std::result::Result<Condvar, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<Condvar, std::error::ErrorCode>::Ok {
+    move condition
+  };
+}
+
+pub fn wait(condition: Condvar&, mutex: Mutex&):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::condvar_wait(&condition, &mutex); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn notify_one(condition: Condvar&):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::condvar_notify_one(&condition); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn notify_all(condition: Condvar&):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::condvar_notify_all(&condition); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}
+
+pub fn condvar_close(condition: Condvar):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::sync::raw::condvar_close(move condition); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_sync(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}

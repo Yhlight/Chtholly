@@ -1,0 +1,17 @@
+schema = "chtholly-release-size-budget-v1"
+profiles = ["minimal", "full"]
+baseline = "chtholly-release-size-baseline.json"
+max_growth_percent = 15
+max_file_count_growth = 64
+[[budget]]
+host = "windows-x64"
+profile = "minimal"
+[[budget]]
+host = "windows-x64"
+profile = "full"
+[[budget]]
+host = "linux-x64"
+profile = "minimal"
+[[budget]]
+host = "linux-x64"
+profile = "full"

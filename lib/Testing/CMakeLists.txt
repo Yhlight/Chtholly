@@ -1,0 +1,3 @@
+add_library(chtholly_testing Test.cpp)
+chtholly_configure_target(chtholly_testing)
+target_link_libraries(chtholly_testing PUBLIC chtholly_support)

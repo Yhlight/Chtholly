@@ -1,0 +1,37 @@
+module std::sync::raw;
+
+// A non-recursive, blocking mutex. The opaque handle is move-only and its
+// lifetime is checked by the CFDL obligation protocol.
+foreign type Mutex: void* invalid null;
+foreign type Condvar: void* invalid null;
+
+foreign fn mutex_init(mutex: out Mutex) -> i32
+link "chtholly_next_host_v1_sync_mutex_init"
+where mutex obliges mutex_close;
+
+foreign fn mutex_lock(mutex: ref_mut Mutex) -> i32
+link "chtholly_next_host_v1_sync_mutex_lock_ref";
+
+foreign fn mutex_unlock(mutex: ref_mut Mutex) -> i32
+link "chtholly_next_host_v1_sync_mutex_unlock_ref";
+
+foreign fn mutex_close(mutex: move Mutex) -> i32
+link "chtholly_next_host_v1_sync_mutex_close"
+where mutex discharges mutex_close;
+
+foreign fn condvar_init(condition: out Condvar) -> i32
+link "chtholly_next_host_v1_sync_condvar_init"
+where condition obliges condvar_close;
+
+foreign fn condvar_wait(condition: ref_mut Condvar, mutex: ref_mut Mutex) -> i32
+link "chtholly_next_host_v1_sync_condvar_wait_ref";
+
+foreign fn condvar_notify_one(condition: ref_mut Condvar) -> i32
+link "chtholly_next_host_v1_sync_condvar_notify_one_ref";
+
+foreign fn condvar_notify_all(condition: ref_mut Condvar) -> i32
+link "chtholly_next_host_v1_sync_condvar_notify_all_ref";
+
+foreign fn condvar_close(condition: move Condvar) -> i32
+link "chtholly_next_host_v1_sync_condvar_close"
+where condition discharges condvar_close;

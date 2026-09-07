@@ -1,0 +1,147 @@
+module std::hash;
+
+import std::ops;
+
+pub trait Hash {
+  fn hash(self: const Self&, seed: u64): u64;
+}
+
+pub trait Equal<Rhs> {
+  fn equal(self: const Self&, rhs: const Rhs&): bool;
+}
+
+// Float operations are compiler-owned so equality and hashing use the same
+// deterministic bit-level order on every target (including NaNs and signed
+// zero). Overloads share one intrinsic role and are selected by the source
+// float width.
+pub fn hash_float(value: const f32&, seed: u64): u64;
+pub fn hash_float(value: const f64&, seed: u64): u64;
+pub fn equal_float(left: const f32&, right: const f32&): bool;
+pub fn equal_float(left: const f64&, right: const f64&): bool;
+pub fn hash_pointer(value: u8*, seed: u64): u64;
+pub fn equal_pointer(left: u8*, right: u8*): bool;
+
+impl Hash for i32 {
+  fn hash(self: const Self&, seed: u64): u64 {
+    return mix((*self) as u64, seed);
+  }
+}
+
+impl Equal<i32> for i32 {
+  fn equal(self: const Self&, rhs: const i32&): bool {
+    return *self == *rhs;
+  }
+}
+
+impl Hash for i8 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<i8> for i8 {
+  fn equal(self: const Self&, rhs: const i8&): bool { return *self == *rhs; }
+}
+impl Hash for i16 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<i16> for i16 {
+  fn equal(self: const Self&, rhs: const i16&): bool { return *self == *rhs; }
+}
+impl Hash for i64 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<i64> for i64 {
+  fn equal(self: const Self&, rhs: const i64&): bool { return *self == *rhs; }
+}
+impl Hash for u8 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<u8> for u8 {
+  fn equal(self: const Self&, rhs: const u8&): bool { return *self == *rhs; }
+}
+impl Hash for u16 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<u16> for u16 {
+  fn equal(self: const Self&, rhs: const u16&): bool { return *self == *rhs; }
+}
+impl Hash for u32 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<u32> for u32 {
+  fn equal(self: const Self&, rhs: const u32&): bool { return *self == *rhs; }
+}
+impl Hash for u64 {
+  fn hash(self: const Self&, seed: u64): u64 { return mix(*self, seed); }
+}
+impl Equal<u64> for u64 {
+  fn equal(self: const Self&, rhs: const u64&): bool { return *self == *rhs; }
+}
+impl Hash for char {
+  fn hash(self: const Self&, seed: u64): u64 { return mix((*self) as u64, seed); }
+}
+impl Equal<char> for char {
+  fn equal(self: const Self&, rhs: const char&): bool { return *self == *rhs; }
+}
+impl Hash for bool {
+  fn hash(self: const Self&, seed: u64): u64 {
+    return if (*self) { mix(1u64, seed) } else { mix(0u64, seed) };
+  }
+}
+impl Equal<bool> for bool {
+  fn equal(self: const Self&, rhs: const bool&): bool {
+    return if (*self) { *rhs } else { !*rhs };
+  }
+}
+
+impl Hash for f32 {
+  fn hash(self: const Self&, seed: u64): u64 {
+    return hash_float(self, seed);
+  }
+}
+impl Equal<f32> for f32 {
+  fn equal(self: const Self&, rhs: const f32&): bool {
+    return equal_float(self, rhs);
+  }
+}
+impl Hash for f64 {
+  fn hash(self: const Self&, seed: u64): u64 {
+    return hash_float(self, seed);
+  }
+}
+impl Equal<f64> for f64 {
+  fn equal(self: const Self&, rhs: const f64&): bool {
+    return equal_float(self, rhs);
+  }
+}
+
+impl Hash for u8* {
+  fn hash(self: const Self&, seed: u64): u64 {
+    return hash_pointer(*self, seed);
+  }
+}
+impl Equal<u8*> for u8* {
+  fn equal(self: const Self&, rhs: u8* const&): bool {
+    return equal_pointer(*self, *rhs);
+  }
+}
+
+// SplitMix-style diffusion. wrapping_mul is compiler-owned so its constant
+// and native forms both retain the low 64 bits without signed-overflow UB.
+pub fn wrapping_mul(left: u64, right: u64): u64;
+
+pub fn mix(value: u64, seed: u64): u64 {
+  var result = value ^ seed;
+  result ^= result >> 30u64;
+  result = wrapping_mul(result, 0xbf58476d1ce4e5b9u64);
+  result ^= result >> 27u64;
+  result = wrapping_mul(result, 0x94d049bb133111ebu64);
+  result ^= result >> 31u64;
+  return result;
+}
+
+pub fn hash_value<T>(value: const T&, seed: u64): u64 where T: Hash {
+  return value.hash(seed);
+}
+
+pub fn equal_value<T>(left: const T&, right: const T&): bool where T: Equal<T> {
+  return left.equal(right);
+}

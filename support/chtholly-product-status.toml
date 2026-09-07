@@ -1,0 +1,66 @@
+schema = "chtholly-product-status-v1"
+product = "0.2.0-preview"
+host_target = "windows-x64"
+required_hosts = ["windows-x64", "linux-x64"]
+optional_hosts = ["macos-arm64"]
+language_versions = ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10"]
+semantic_artifact_epoch = 27
+standard_library_epoch = 13
+standard_library_api = 22
+package_state_format = 77
+concrete_component_format = 51
+component_abi_epoch = 1
+runtime_abi = ["1"]
+
+# Status is a product promise, not a parser capability claim. An
+# implementation may exist for an experimental/design-pending entry without
+# making that source or ABI surface stable.
+[[capability]]
+id = "language-core"
+status = "preview"
+evidence = ["support/chtholly-v1.10.toml", "docs/spec/language-surface.md"]
+
+[[capability]]
+id = "ownership-lifecycle"
+status = "preview"
+evidence = ["docs/spec/failure-lifecycle-and-storage.md", "tests/chtholly_contract_artifact_tests.cpp"]
+
+[[capability]]
+id = "component-abi-1"
+status = "preview"
+evidence = ["docs/spec/component-and-ffi-abi.md", "tests/chtholly_component_e2e_tests.py"]
+
+[[capability]]
+id = "synchronous-stdlib"
+status = "preview"
+evidence = ["docs/stdlib-reference.md", "examples/telemetry-pipeline/README.md", "examples/sqlite-safety/README.md"]
+
+[[capability]]
+id = "diagnostic-repair"
+status = "preview"
+evidence = ["docs/diagnostics.md", "tests/chtholly_lsp_protocol_tests.py"]
+
+[[capability]]
+id = "typed-channel"
+status = "experimental"
+evidence = ["docs/design/next-typed-channel-descriptor.md", "stdlib/typed_channel.cns"]
+
+[[capability]]
+id = "async-task-runtime"
+status = "preview"
+evidence = ["docs/spec/async-and-hosted-program-model.md", "docs/design/next-async-source-semantics.md", "tests/chtholly_task_runtime_tests.cpp"]
+
+[[capability]]
+id = "cancellation-aware-channel"
+status = "design-pending"
+evidence = ["docs/design/next-result-recovery-conditional-ownership.md"]
+
+[[capability]]
+id = "registry-distribution"
+status = "experimental"
+evidence = ["docs/toolchain-management.md", "README.md"]
+
+[[capability]]
+id = "component-abi-2-design"
+status = "design-pending"
+evidence = ["docs/design/next-component-abi-2-resource-protocol.md", "docs/design/abi-2-design-gate-record.md", "include/chtholly/Compiler/ComponentABI2Protocol.h", "include/chtholly/Compiler/ComponentABI2Registry.h", "runtime/include/chtholly/component_loader_v2.h", "runtime/include/chtholly/next_resource_lease_v2.h", "tests/chtholly_component_abi2_design_tests.cpp", "tests/chtholly_component_abi2_rejection_tests.cpp", "tests/chtholly_component_loader_v2_tests.cpp", "tests/chtholly_resource_lease_runtime_tests.cpp", "tests/chtholly_payload_transport_v2_tests.cpp", "tests/chtholly_component_payload_cross_package_tests.cpp"]

@@ -1,0 +1,17 @@
+module token_provider;
+
+foreign type Token: void* invalid null;
+
+foreign fn acquire(token: out Token) -> i32
+where token obliges release;
+
+foreign fn release(token: move Token) -> i32
+where token discharges release;
+
+foreign type Ticket: void* invalid null;
+
+foreign fn acquire_ticket(ticket: out Ticket) -> void
+where ticket obliges release_ticket;
+
+foreign fn release_ticket(ticket: move Ticket) -> void
+where ticket discharges release_ticket;

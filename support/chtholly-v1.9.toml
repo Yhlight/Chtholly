@@ -1,0 +1,29 @@
+schema = "chtholly-language-surface-v3"
+release = "1.9"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.8.toml"
+
+normative_specs = ["docs/spec/v1.9-language-roadmap.md"]
+
+[[feature]]
+id = "mutable-callable-iteration"
+title = "Mutable callable algorithms and borrow-carrying continuations"
+scope = "v1.9"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.9-language-roadmap.md#mutable-callable-iteration"
+tokens = ["KwTrait", "KwImpl", "KwWhere", "KwMove", "KwForeach"]
+nodes = ["InterfaceDecl", "ImplDecl", "ConstraintList", "CallExpr", "ForeachStmt"]
+evidence = ["tests/chtholly_collection_protocol_tests.py", "stdlib/iter_mutable.cns"]
+
+[[feature]]
+id = "collection-and-collector-protocols"
+title = "Shared collection views and verified collector construction"
+scope = "v1.9"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.9-language-roadmap.md#collection-and-collector-protocols"
+tokens = ["KwTrait", "KwImpl", "KwWhere", "KwMove"]
+nodes = ["InterfaceDecl", "ImplDecl", "ConstraintList", "CallExpr"]
+evidence = ["tests/chtholly_collection_protocol_tests.py", "stdlib/collections.cns"]

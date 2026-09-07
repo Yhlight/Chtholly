@@ -1,0 +1,4 @@
+module std::volatile;
+
+pub unsafe fn load<T>(address: const T*): T;
+pub unsafe fn store<T>(address: T*, value: T): void;

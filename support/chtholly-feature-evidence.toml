@@ -1,0 +1,256 @@
+schema = "chtholly-feature-evidence-v1"
+release = "1.10"
+surface = "support/chtholly-v1.10.toml"
+categories = ["positive", "negative", "version", "cross_package", "llvm_execution"]
+
+[[coverage]]
+id = "baseline-language"
+features = [
+  "lexical-core",
+  "modules",
+  "bindings-and-control-flow",
+  "nominal-types",
+  "diagnostic-recovery",
+  "conditional-expressions",
+  "c-style-loops",
+  "implicit-coercions",
+  "builtin-operators",
+  "numeric-model",
+  "aggregate-text-types",
+  "never-unreachable",
+  "unrecoverable-failure",
+  "names-scopes-shadowing",
+  "language-versioning",
+  "lexical-grammar",
+  "nominal-data-patterns",
+  "contextual-typing",
+  "program-model",
+  "evaluation-order",
+]
+positive = ["chtholly_feature_matrix_tests"]
+negative = ["chtholly_feature_matrix_tests", "chtholly_diagnostic_format_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_project_workflow_tests", "chtholly_package_artifact_interop_tests"]
+llvm_execution = ["chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "structured-destructuring"
+features = ["structured-destructuring"]
+positive = ["chtholly_destructuring_tests"]
+negative = ["chtholly_destructuring_tests"]
+version = ["chtholly_destructuring_tests"]
+cross_package = ["chtholly_destructuring_tests"]
+llvm_execution = ["chtholly_destructuring_tests"]
+
+[[coverage]]
+id = "ownership-lifecycle"
+features = [
+  "ownership-and-references",
+  "unsafe-and-pointers",
+  "c-representation",
+  "representation-and-lifecycle",
+  "temporaries-value-model",
+  "nominal-construction-destruction",
+  "defer",
+  "null-raw-pointers",
+  "storage-duration",
+  "allocation-placement-construction",
+  "unsafe-authority",
+]
+positive = ["chtholly_container_ownership_fixture_tests", "chtholly_contract_artifact_tests"]
+negative = ["chtholly_container_ownership_fixture_tests", "chtholly_contract_artifact_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_package_artifact_interop_tests", "chtholly_contract_artifact_tests"]
+llvm_execution = ["chtholly_vec_runtime_tests", "chtholly_container_ownership_fixture_tests"]
+
+[[coverage]]
+id = "generics-and-protocols"
+features = [
+  "generics",
+  "inherent-functions",
+  "noncapturing-callables",
+  "interfaces",
+  "overloads-defaults-named-arguments",
+  "aliases-interface-constraints",
+  "callable-contracts",
+  "generic-inference-specialization",
+  "core-library-protocols",
+  "public-callable-identity",
+]
+positive = ["chtholly_feature_matrix_tests", "chtholly_callable_contract_tests"]
+negative = ["chtholly_feature_matrix_tests", "chtholly_callable_contract_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_package_artifact_interop_tests", "chtholly_contract_artifact_tests"]
+llvm_execution = ["chtholly_package_artifact_interop_tests", "chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "constant-types-and-casts"
+features = [
+  "explicit-checked-casts",
+  "constants-constant-evaluation",
+  "layout-queries",
+  "closed-type-properties",
+]
+positive = ["chtholly_feature_matrix_tests"]
+negative = ["chtholly_feature_matrix_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_feature_matrix_tests"]
+llvm_execution = ["chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "result-and-foreign-boundary"
+features = [
+  "cfdl-components",
+  "failure-propagation",
+  "result-design",
+  "foreign-linkage-boundary",
+]
+positive = ["chtholly_cfdl_resource_flow_tests", "chtholly_package_artifact_interop_tests"]
+negative = ["chtholly_cfdl_resource_flow_tests", "chtholly_package_artifact_interop_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_package_artifact_interop_tests"]
+llvm_execution = ["chtholly_stdlib_llvm_fixture_tests", "chtholly_package_artifact_interop_tests"]
+
+[[coverage]]
+id = "typed-channels"
+features = ["typed-channels"]
+positive = ["chtholly_semantic_support_tests", "chtholly_host_runtime_tests"]
+negative = ["chtholly_contract_artifact_tests"]
+version = ["chtholly_feature_matrix_tests"]
+cross_package = ["chtholly_contract_artifact_tests"]
+llvm_execution = ["chtholly_host_runtime_tests"]
+
+[[coverage]]
+id = "environment-callables"
+features = ["bound-methods", "callable-system", "callable-interfaces"]
+positive = ["chtholly_environment_callable_abi_tests"]
+negative = ["chtholly_environment_callable_abi_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_environment_callable_abi_tests"]
+llvm_execution = ["chtholly_environment_callable_abi_tests"]
+
+[[coverage]]
+id = "operator-protocols"
+features = ["operator-overloading", "operator-bitwise", "operator-assignment"]
+positive = ["chtholly_feature_matrix_tests"]
+negative = ["chtholly_feature_matrix_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_feature_matrix_tests"]
+llvm_execution = ["chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "module-aliases"
+features = ["module-aliases"]
+positive = ["chtholly_module_alias_tests"]
+negative = ["chtholly_module_alias_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_module_alias_tests"]
+llvm_execution = ["chtholly_module_alias_tests"]
+
+[[coverage]]
+id = "labeled-loops"
+features = ["labeled-loop-control"]
+positive = ["chtholly_labeled_loop_tests"]
+negative = ["chtholly_labeled_loop_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_feature_matrix_tests"]
+llvm_execution = ["chtholly_labeled_loop_tests"]
+
+[[coverage]]
+id = "concurrency-memory"
+features = ["concurrency-memory-boundary"]
+positive = ["chtholly_feature_matrix_tests"]
+negative = ["chtholly_feature_matrix_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_feature_matrix_tests"]
+llvm_execution = ["chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "async-program-model"
+features = ["async-syntax", "async-program-model-extension"]
+positive = ["chtholly_feature_matrix_tests"]
+negative = ["chtholly_feature_matrix_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_feature_matrix_tests"]
+llvm_execution = ["chtholly_feature_matrix_tests"]
+
+[[coverage]]
+id = "foreach"
+features = ["foreach"]
+positive = ["chtholly_foreach_tests"]
+negative = ["chtholly_foreach_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_foreach_tests"]
+llvm_execution = ["chtholly_foreach_tests"]
+
+[[coverage]]
+id = "iterator-protocol-generalization"
+features = ["iterator-protocol-generalization"]
+positive = ["chtholly_iterator_protocol_tests"]
+negative = ["chtholly_iterator_protocol_tests"]
+version = ["chtholly_iterator_protocol_tests", "chtholly_language_version_tests"]
+cross_package = ["chtholly_iterator_protocol_tests"]
+llvm_execution = ["chtholly_iterator_protocol_tests", "chtholly_foreach_tests"]
+
+[[coverage]]
+id = "standard-iteration-ecosystem"
+features = ["standard-iteration-ecosystem"]
+positive = ["chtholly_iterator_ecosystem_tests"]
+negative = ["chtholly_iterator_ecosystem_tests"]
+version = ["chtholly_iterator_ecosystem_tests"]
+cross_package = ["chtholly_iterator_ecosystem_tests"]
+llvm_execution = ["chtholly_iterator_ecosystem_tests"]
+
+[[coverage]]
+id = "value-blocks-and-switch-statements"
+features = ["value-blocks-and-switch-statements"]
+positive = ["chtholly_value_block_tests"]
+negative = ["chtholly_value_block_tests"]
+version = ["chtholly_value_block_tests"]
+cross_package = ["chtholly_value_block_tests"]
+llvm_execution = ["chtholly_value_block_tests"]
+
+[[coverage]]
+id = "iterator-algorithms"
+features = ["iterator-algorithms"]
+positive = ["chtholly_iterator_algorithm_tests"]
+negative = ["chtholly_iterator_algorithm_tests"]
+version = ["chtholly_iterator_algorithm_tests"]
+cross_package = ["chtholly_iterator_algorithm_tests"]
+llvm_execution = ["chtholly_iterator_algorithm_tests"]
+
+[[coverage]]
+id = "fieldless-value-enums"
+features = ["fieldless-value-enums"]
+positive = ["chtholly_value_enum_tests"]
+negative = ["chtholly_value_enum_tests"]
+version = ["chtholly_value_enum_tests"]
+cross_package = ["chtholly_value_enum_tests"]
+llvm_execution = ["chtholly_value_enum_tests"]
+
+[[coverage]]
+id = "mutable-callable-iteration"
+features = ["mutable-callable-iteration"]
+positive = ["chtholly_collection_protocol_tests"]
+negative = ["chtholly_collection_protocol_tests"]
+version = ["chtholly_collection_protocol_tests"]
+cross_package = ["chtholly_collection_protocol_tests"]
+llvm_execution = ["chtholly_collection_protocol_tests"]
+
+[[coverage]]
+id = "collection-and-collector-protocols"
+features = ["collection-and-collector-protocols"]
+positive = ["chtholly_collection_protocol_tests"]
+negative = ["chtholly_collection_protocol_tests"]
+version = ["chtholly_collection_protocol_tests"]
+cross_package = ["chtholly_collection_protocol_tests"]
+llvm_execution = ["chtholly_collection_protocol_tests"]
+
+[[coverage]]
+id = "wide-slice-indexing"
+features = ["wide-slice-indexing"]
+positive = ["chtholly_language_version_tests"]
+negative = ["chtholly_language_version_tests"]
+version = ["chtholly_language_version_tests"]
+cross_package = ["chtholly_cffi_tool_tests"]
+llvm_execution = ["chtholly_language_version_tests", "chtholly_cffi_tool_tests"]

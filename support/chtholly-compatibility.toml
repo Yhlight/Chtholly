@@ -1,0 +1,43 @@
+schema = "chtholly-compatibility-v1"
+
+# This file is the machine-readable compatibility contract for the preview
+# toolchain.  The implementation constants remain the source of truth for
+# behavior; scripts/compatibility-audit.py prevents the public contract from
+# drifting away from those constants.
+product = "0.2.0-preview"
+required_hosts = ["windows-x64", "linux-x64"]
+optional_hosts = ["macos-arm64"]
+source_versions = ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10"]
+
+[semantic]
+artifact_epoch = 27
+public_interface_epoch = 5
+
+[package]
+state_magic = "CHNXTPK79"
+state_format = 77
+artifact_format = 21
+
+[concrete]
+magic = "CHNXSCC51"
+format = 51
+
+[stdlib]
+format = 5
+epoch = 13
+api_epoch = 22
+
+[interop]
+cfdl_semantic_epoch = 15
+cfdl_schema_epoch = 10
+cffi_receipt = "CHCFFI3"
+
+[abi]
+component_epoch = 1
+runtime_epoch = 1
+
+[policy]
+unknown_records = "reject"
+stale_records = "reject"
+future_records = "reject"
+rebuild = "explicit"

@@ -1,0 +1,13 @@
+[package]
+name = "telemetry-app"
+language = "1.10"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]
+
+[dependencies]
+telemetry-model = { workspace = true }
+telemetry-source = { workspace = true }
+telemetry-analysis = { workspace = true }
+telemetry-wire = { workspace = true }

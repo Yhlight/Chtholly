@@ -1,0 +1,13 @@
+module main;
+
+import std::vec;
+import test_control;
+
+fn main(): i32 {
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_set_allocation_limit(0u64);
+  }
+  var values = std::vec::Vec<i32>::init();
+  values.reserve(1usize);
+  return 0;
+}

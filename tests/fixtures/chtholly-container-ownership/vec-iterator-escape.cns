@@ -1,0 +1,9 @@
+module vec_iterator_escape;
+import std::vec;
+
+fn leak_iterator(): std::vec::VecIterator<i32> {
+  var values = std::vec::Vec<i32>::init();
+  return values.iter();
+}
+
+fn main(): i32 { return 0; }

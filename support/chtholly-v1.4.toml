@@ -1,0 +1,25 @@
+schema = "chtholly-language-surface-v3"
+release = "1.4"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.3.toml"
+
+normative_specs = [
+  "docs/spec/v1.4-language-roadmap.md",
+]
+
+[[feature]]
+id = "foreach"
+title = "Ownership-aware iterator loop"
+scope = "v1.4"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.4-language-roadmap.md#foreach-statement"
+tokens = ["KwForeach", "KwLet", "KwVar", "KwIn"]
+nodes = ["ForeachBinding", "ForeachStmt"]
+evidence = [
+  "tests/chtholly_foreach_tests.py",
+  "tests/chtholly_language_version_tests.py",
+  "tests/fixtures/chtholly-foreach-runtime/main.cns",
+  "tests/fixtures/chtholly-foreach-lifecycle/main.cns",
+]

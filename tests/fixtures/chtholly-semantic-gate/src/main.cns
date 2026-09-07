@@ -1,0 +1,54 @@
+module main;
+
+import std::result;
+import std::option;
+import std::convert;
+import provider;
+
+fn make_ok(): std::result::Result<void, i32> {
+  return std::result::Result<void, i32>::Ok {};
+}
+
+fn make_err(): std::result::Result<void, i32> {
+  let error = 7i32;
+  return std::result::Result<void, i32>::Err { move error };
+}
+
+fn propagate(): std::result::Result<void, i32> {
+  make_ok()?;
+  return std::result::Result<void, i32>::Ok {};
+}
+
+fn checked_char(): std::result::Result<char, std::convert::CastError> {
+  return 65u32 as? char;
+}
+
+fn checked_invalid_char(): std::result::Result<char, std::convert::CastError> {
+  return 0x110000u32 as? char;
+}
+
+fn result_code(value: std::result::Result<void, i32>): i32 {
+  return switch (value) {
+    std::result::Result<void, i32>::Ok { .. } => 0i32;
+    std::result::Result<void, i32>::Err { error = copy .0 } => move error;
+  };
+}
+
+fn main(): i32 {
+  let ascii: char = 'A';
+  let unicode: char = '中';
+  let from_code: char = 65u32 as char;
+  if (provider::letter() != unicode) { return 4; }
+  let code: u32 = ascii as u32;
+  if (code != 65u32 || from_code != ascii || unicode as u32 != 20013u32) {
+    return 1;
+  }
+  if (ascii == 'B' || ascii != 'A') { return 2; }
+  if (result_code(make_ok()) != 0 || result_code(make_err()) != 7 ||
+      result_code(propagate()) != 0) {
+    return 3;
+  }
+  checked_char();
+  checked_invalid_char();
+  return 0;
+}

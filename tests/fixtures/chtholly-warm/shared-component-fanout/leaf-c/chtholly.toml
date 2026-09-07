@@ -1,0 +1,10 @@
+[package]
+name = "leaf-c"
+language = "1.0"
+
+[build]
+entry = "src/entry.cns"
+module_paths = ["src"]
+
+[dependencies]
+facade = { path = "../facade" }

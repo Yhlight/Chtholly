@@ -1,0 +1,2 @@
+module facade;
+export import base;

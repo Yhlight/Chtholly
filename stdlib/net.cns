@@ -1,0 +1,49 @@
+module std::net;
+
+import std::error;
+import std::net::raw;
+import std::result;
+
+pub alias Socket = std::net::raw::Socket;
+
+pub fn listen(port: u16):
+    std::result::Result<Socket, std::error::ErrorCode> {
+  var socket: Socket;
+  var status = 0i32;
+  unsafe { status = std::net::raw::listen(port, socket); }
+  if (status != 0) {
+    return std::result::Result<Socket, std::error::ErrorCode>::Err {
+      std::error::from_net(status)
+    };
+  }
+  return std::result::Result<Socket, std::error::ErrorCode>::Ok {
+    move socket
+  };
+}
+
+pub fn accept(listener: Socket&):
+    std::result::Result<Socket, std::error::ErrorCode> {
+  var socket: Socket;
+  var status = 0i32;
+  unsafe { status = std::net::raw::accept(&listener, socket); }
+  if (status != 0) {
+    return std::result::Result<Socket, std::error::ErrorCode>::Err {
+      std::error::from_net(status)
+    };
+  }
+  return std::result::Result<Socket, std::error::ErrorCode>::Ok {
+    move socket
+  };
+}
+
+pub fn close(socket: Socket):
+    std::result::Result<void, std::error::ErrorCode> {
+  var status = 0i32;
+  unsafe { status = std::net::raw::close(move socket); }
+  if (status != 0) {
+    return std::result::Result<void, std::error::ErrorCode>::Err {
+      std::error::from_net(status)
+    };
+  }
+  return std::result::Result<void, std::error::ErrorCode>::Ok {};
+}

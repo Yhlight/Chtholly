@@ -1,0 +1,11 @@
+[package]
+name = "component_host_beta"
+language = "1.9"
+
+[build]
+module_paths = ["src"]
+
+[component]
+abi = 1
+identity = "org.chtholly.examples.component-host.beta"
+exports = ["plugin::hold", "plugin::process"]

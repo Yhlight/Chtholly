@@ -1,0 +1,12 @@
+schema = "chtholly-branding-trace-policy-v1"
+canonical_source_root = "lib/Compiler"
+canonical_include_root = "include/chtholly/Compiler"
+canonical_target_prefix = "chtholly_compiler_"
+
+# These names are already published identities. They are not source-branding
+# exemptions for new code; removing them requires a new ABI/artifact epoch.
+published_identity_allowlist = [
+  "chtholly_next_runtime_v1",
+  "CHNX",
+  "next-v",
+]

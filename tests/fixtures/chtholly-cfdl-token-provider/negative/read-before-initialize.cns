@@ -1,0 +1,6 @@
+module read_before_initialize;
+
+fn main(): i32 {
+  let value: i32;
+  return value;
+}

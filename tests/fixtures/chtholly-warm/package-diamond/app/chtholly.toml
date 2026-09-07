@@ -1,0 +1,11 @@
+[package]
+name = "app"
+language = "1.0"
+
+[build]
+entry = "src/main.cns"
+module_paths = ["src"]
+
+[dependencies]
+facade = { path = "../facade" }
+side = { path = "../side" }

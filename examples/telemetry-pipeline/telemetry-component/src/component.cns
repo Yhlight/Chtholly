@@ -1,0 +1,14 @@
+module telemetry::component;
+
+// Consume a call-scoped byte view and return a stable aggregate. The
+// Component ABI intentionally transports only the scalar result; ownership of
+// the input remains with the host for the duration of the call.
+pub fn checksum(data: slice<u8>): u64 {
+  var index = 0u64;
+  var total = 0u64;
+  while (index < data.len) {
+    total += data[index] as u64;
+    index += 1u64;
+  }
+  return total;
+}

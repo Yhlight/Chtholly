@@ -1,0 +1,54 @@
+schema = "chtholly-language-surface-v3"
+release = "1.3"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.2.toml"
+
+normative_specs = [
+  "docs/spec/v1.3-language-roadmap.md",
+]
+
+[[feature]]
+id = "operator-overloading"
+title = "Arithmetic and comparison operator protocols"
+scope = "v1.3"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.3-language-roadmap.md#operator-core"
+evidence = ["docs/spec/v1.3-language-roadmap.md", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "operator-bitwise"
+title = "Bitwise and shift operator protocols"
+scope = "v1.3"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.3-language-roadmap.md#operator-core"
+evidence = ["docs/spec/v1.3-language-roadmap.md", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "operator-assignment"
+title = "Compound assignment operator protocols"
+scope = "v1.3"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.3-language-roadmap.md#compound-assignment"
+evidence = ["docs/spec/v1.3-language-roadmap.md", "scripts/compiler-boundary-audit.py", "scripts/compiler-boundary-audit.py"]
+
+[[feature]]
+id = "module-aliases"
+title = "Module aliases and imported-name control"
+scope = "v1.3"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.3-language-roadmap.md#module-aliases"
+evidence = ["tests/chtholly_module_alias_tests.cpp", "tests/chtholly_language_version_tests.py"]
+
+[[feature]]
+id = "labeled-loop-control"
+title = "Labeled structured loop control"
+scope = "v1.3"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.3-language-roadmap.md#labeled-loop-control"
+evidence = ["tests/chtholly_labeled_loop_tests.cpp", "tests/chtholly_language_version_tests.py"]

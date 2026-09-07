@@ -1,0 +1,9 @@
+module vec_element_relocation;
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  let element = values.at(0usize);
+  values.push(7);
+  return element;
+}

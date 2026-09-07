@@ -1,0 +1,6 @@
+module fuzz;
+fn inspect<T>(value: const T&): void { return; }
+fn run<I>(iterator: I): void {
+  foreach (let item in move iterator) { inspect(item); }
+  return;
+}

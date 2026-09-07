@@ -1,0 +1,4 @@
+add_executable(chtholly_component_host_example main.cpp)
+chtholly_configure_target(chtholly_component_host_example)
+target_link_libraries(chtholly_component_host_example PRIVATE
+  chtholly_component_loader_v1 chtholly_driver_support)

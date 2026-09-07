@@ -1,0 +1,110 @@
+module main;
+
+import std::vec;
+
+fn empty_sequence(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  var count = 0;
+  foreach (let item: const i32& in values.iter()) {
+    count = count + item;
+  }
+  return count;
+}
+
+fn shared_multi_element(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(1);
+  values.push(2);
+  values.push(3);
+  var sum = 0;
+  foreach (let item: const i32& in values.iter()) {
+    sum = sum + item;
+  }
+  return sum;
+}
+
+fn mutable_multi_element(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(4);
+  values.push(5);
+  foreach (var item: i32& in values.iter_mut()) {
+    item = item + 10;
+  }
+  return values.at(0usize) + values.at(1usize);
+}
+
+fn named_iterator_move(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(17);
+  let iterator = values.iter();
+  var sum = 0;
+  foreach (let item in move iterator) {
+    sum = sum + item;
+  }
+  return sum;
+}
+
+fn break_cleanup(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(1);
+  values.push(2);
+  values.push(3);
+  var sum = 0;
+  foreach (let item in values.iter()) {
+    sum = sum + item;
+    if (item == 2) { break; }
+  }
+  return sum;
+}
+
+fn continue_cleanup(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(1);
+  values.push(2);
+  values.push(3);
+  var sum = 0;
+  foreach (let item in values.iter()) {
+    if (item == 2) { continue; }
+    sum = sum + item;
+  }
+  return sum;
+}
+
+fn labeled_cleanup(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(1);
+  values.push(2);
+  values.push(3);
+  var sum = 0;
+  outer: foreach (let item in values.iter()) {
+    while (true) {
+      if (item == 1) { continue outer; }
+      if (item == 3) { break outer; }
+      break;
+    }
+    sum = sum + item;
+  }
+  return sum;
+}
+
+fn return_cleanup(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(8);
+  values.push(9);
+  foreach (let item in values.iter()) {
+    if (item == 9) { return item; }
+  }
+  return 0;
+}
+
+fn main(): i32 {
+  if (empty_sequence() != 0) { return 1; }
+  if (shared_multi_element() != 6) { return 2; }
+  if (mutable_multi_element() != 29) { return 3; }
+  if (named_iterator_move() != 17) { return 4; }
+  if (break_cleanup() != 3) { return 5; }
+  if (continue_cleanup() != 4) { return 6; }
+  if (labeled_cleanup() != 2) { return 7; }
+  if (return_cleanup() != 9) { return 8; }
+  return 0;
+}

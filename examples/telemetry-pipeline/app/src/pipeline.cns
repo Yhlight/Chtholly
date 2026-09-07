@@ -1,0 +1,109 @@
+module telemetry::pipeline;
+
+import std::collections;
+import std::host;
+import std::result;
+import std::text;
+import std::iter::mutable;
+import std::vec;
+import std::typed_channel;
+import std::error;
+import telemetry::analysis;
+import telemetry::model;
+import telemetry::source;
+import telemetry::wire;
+
+fn typed_sample_channel_pipeline(): i32 {
+  var channel =
+      std::typed_channel::Channel<telemetry::model::Sample>::empty();
+  let initialized = channel.init(4u64);
+  switch (initialized) {
+    std::result::Result<void, std::error::ErrorCode>::Ok { .. } => {}
+    std::result::Result<void, std::error::ErrorCode>::Err { .. } => return 1;
+  }
+  let sample = telemetry::model::sample(7, 42);
+  let sent = channel.send(move sample);
+  switch (sent) {
+    std::result::Result<void, std::typed_channel::SendError<telemetry::model::Sample> >::Ok { .. } => {}
+    std::result::Result<void, std::typed_channel::SendError<telemetry::model::Sample> >::Err { .. } => return 2;
+  }
+  let got = channel.receive();
+  let received = switch (got) {
+    std::result::Result<telemetry::model::Sample, std::error::ErrorCode>::Ok { value = move .0 } => value;
+    std::result::Result<telemetry::model::Sample, std::error::ErrorCode>::Err { .. } => { return 3; };
+  };
+  let closed = (move channel).close();
+  switch (closed) {
+    std::result::Result<void, std::error::ErrorCode>::Ok { .. } => {}
+    std::result::Result<void, std::error::ErrorCode>::Err { .. } => return 4;
+  }
+  if (received.sensor != 7 || received.value != 42) { return 5; }
+  return 0;
+}
+
+fn summary_pipeline(): i32 {
+  let normalized = std::iter::mutable::map_mut(
+      telemetry::source::samples(50000),
+      telemetry::analysis::normalizer(1));
+  let accepted = std::iter::mutable::filter_mut(
+      move normalized, telemetry::analysis::accept_below(50));
+  let summary = std::collections::collect(
+      move accepted, telemetry::analysis::stats_collector());
+  if (summary.count != 24500) { return 1; }
+  if (summary.sum != 612500i64) { return 2; }
+  if (summary.minimum != 1 || summary.maximum != 49) { return 3; }
+  return 0;
+}
+
+fn vec_pipeline(): i32 {
+  let shifted = std::iter::mutable::map_mut(
+      telemetry::source::samples(1000),
+      telemetry::analysis::incrementer(1));
+  let values = std::collections::collect(
+      move shifted,
+      std::collections::vec_collector(
+          std::vec::Vec<i32>::init()));
+  if (values.len() != 1000usize) { return 1; }
+  let view = std::collections::view(&values);
+  var sum = 0;
+  foreach (let item: const i32& in view.items()) {
+    sum += item;
+  }
+  if (sum != 50500) { return 2; }
+  return 0;
+}
+
+fn aggregate_pipeline(index: u64): i32 {
+  let pair = telemetry::model::sample_pair();
+  if (pair[0].value != 7 || pair[1].value != 11) { return 1; }
+  if (pair[index].sensor != (index as i32) + 1) { return 2; }
+  return 0;
+}
+
+pub fn run(): i32 {
+  let typed = typed_sample_channel_pipeline();
+  if (typed != 0) { return 40 + typed; }
+  let clock = clock_probe();
+  switch (clock) {
+    std::result::Result<bool, i32>::Ok { .. } => {}
+    std::result::Result<bool, i32>::Err { .. } => return 31;
+  }
+  if (telemetry::wire::self_test() != 0) { return 29; }
+  if (std::text::len("telemetry") != 9usize) { return 30; }
+  let summary = summary_pipeline();
+  if (summary != 0) { return summary; }
+  let vector = vec_pipeline();
+  if (vector != 0) { return 10 + vector; }
+  let aggregate = aggregate_pipeline(1u64);
+  if (aggregate != 0) { return 20 + aggregate; }
+  return 0;
+}
+
+fn clock_probe(): std::result::Result<bool, i32> {
+  let instant: std::host::Instant;
+  let status = unsafe { std::host::monotonic_now(instant) };
+  if (status != 0) {
+    return std::result::Result<bool, i32>::Err { status };
+  }
+  return std::result::Result<bool, i32>::Ok { true };
+}

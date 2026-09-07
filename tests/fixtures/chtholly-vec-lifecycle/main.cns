@@ -1,0 +1,185 @@
+module main;
+
+import std::option;
+import std::vec;
+import test_control;
+
+lifecycle(copy = delete, move = default, drop = custom)
+struct Tracker {
+  pub value: i32;
+}
+
+impl Tracker {
+  fn drop(self: Tracker&): void {
+    unsafe {
+      test_control::chtholly_next_runtime_v1_testing_lifecycle_drop();
+    }
+    return;
+  }
+}
+
+fn tracker(value: i32): Tracker {
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_construct();
+  }
+  return Tracker { .value = value };
+}
+
+fn tracker_value_scope(): i32 {
+  var value = tracker(60);
+  return 0;
+}
+
+fn iterate_tracker_normal(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(10));
+  var iterator = values.iter();
+  let step = (move iterator).next();
+  let result = switch (step) {
+    std::vec::VecIterStep<Tracker>::Done => 1;
+    std::vec::VecIterStep<Tracker>::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      if (item.value != 10) { return 2; }
+      let final_step = (move continuation).next();
+      switch (final_step) {
+        std::vec::VecIterStep<Tracker>::Done => 0;
+        std::vec::VecIterStep<Tracker>::Item { .. } => 3;
+      }
+    };
+  };
+  return result;
+}
+
+fn iterate_tracker_break(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(20));
+  var iterator = values.iter();
+  while (true) {
+    let step = (move iterator).next();
+    switch (step) {
+      std::vec::VecIterStep<Tracker>::Done => { break; };
+      std::vec::VecIterStep<Tracker>::Item {
+        item = copy .0,
+        continuation = move .1
+      } => {
+        if (item.value != 20) { return 1; }
+        break;
+      };
+    };
+  }
+  return 0;
+}
+
+fn iterate_tracker_continue(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(30));
+  var iterator = values.iter();
+  while (true) {
+    let step = (move iterator).next();
+    switch (step) {
+      std::vec::VecIterStep<Tracker>::Done => { break; };
+      std::vec::VecIterStep<Tracker>::Item {
+        item = copy .0,
+        continuation = move .1
+      } => {
+        if (item.value != 30) { return 2; }
+        iterator = move continuation;
+        continue;
+      };
+    };
+  }
+  return 0;
+}
+
+fn iterate_tracker_return(): i32 {
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(40));
+  let iterator = values.iter();
+  let step = (move iterator).next();
+  let result = switch (step) {
+    std::vec::VecIterStep<Tracker>::Done => 1;
+    std::vec::VecIterStep<Tracker>::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      if (item.value != 40) { return 2; }
+      0
+    };
+  };
+  return result;
+}
+
+fn main(): i32 {
+  unsafe { test_control::chtholly_next_runtime_v1_testing_lifecycle_reset(); }
+  if (tracker_value_scope() != 0) { return 6; }
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) { return 7; }
+  }
+
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_reset();
+  }
+  if (iterate_tracker_normal() != 0) { return 10; }
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_construct_count() != 1u64) { return 11; }
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) { return 18; }
+  }
+
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_reset();
+  }
+  if (iterate_tracker_break() != 0) { return 12; }
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) {
+      return 13;
+    }
+  }
+
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_reset();
+  }
+  if (iterate_tracker_continue() != 0) { return 14; }
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) {
+      return 15;
+    }
+  }
+
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_reset();
+  }
+  if (iterate_tracker_return() != 0) { return 16; }
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) {
+      return 17;
+    }
+  }
+
+  unsafe {
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_reset();
+  }
+  var values = std::vec::Vec<Tracker>::init();
+  values.push(tracker(1));
+  values.push(tracker(2));
+  values.push(tracker(3));
+  values.reserve(32usize);
+  let removed = values.remove(1usize);
+  let removed_item = (move removed).unwrap();
+  if (removed_item.value != 2) { return 1; }
+  let popped = values.pop();
+  let popped_item = (move popped).unwrap();
+  if (popped_item.value != 3) { return 2; }
+  values.clear();
+  unsafe {
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_construct_count() != 3u64) {
+      return 3;
+    }
+    if (test_control::chtholly_next_runtime_v1_testing_lifecycle_drop_count() != 1u64) {
+      return 4;
+    }
+    test_control::chtholly_next_runtime_v1_testing_lifecycle_expect_drops(3u64);
+  }
+  return 0;
+}

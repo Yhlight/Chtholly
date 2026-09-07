@@ -1,0 +1,9 @@
+module provider;
+
+pub fn identity<T>(value: T): T {
+  return value;
+}
+
+pub fn relay<T>(value: T): T {
+  return identity(value);
+}

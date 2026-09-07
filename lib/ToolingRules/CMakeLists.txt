@@ -1,0 +1,6 @@
+add_library(chtholly_tooling_rules
+  PackageSourceContractRules.cpp
+  TargetToolchainContractRules.cpp)
+
+chtholly_configure_target(chtholly_tooling_rules)
+target_link_libraries(chtholly_tooling_rules PUBLIC chtholly_basic)

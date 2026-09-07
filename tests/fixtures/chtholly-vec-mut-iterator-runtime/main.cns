@@ -1,0 +1,28 @@
+module main;
+
+import std::vec;
+
+fn main(): i32 {
+  var values = std::vec::Vec<i32>::init();
+  values.push(23);
+  let iterator = values.iter_mut();
+  let step = (move iterator).next();
+  let result = switch (step) {
+    std::vec::VecMutIterStep<i32>::Done => 1;
+    std::vec::VecMutIterStep<i32>::Item {
+      item = copy .0,
+      continuation = move .1
+    } => {
+      item = 29;
+      let final_step = (move continuation).next();
+      let final_result = switch (final_step) {
+        std::vec::VecMutIterStep<i32>::Done => 0;
+        std::vec::VecMutIterStep<i32>::Item { .. } => 2;
+      };
+      final_result
+    };
+  };
+  if (result != 0) { return result; }
+  if (values.at(0usize) != 29) { return 3; }
+  return 0;
+}

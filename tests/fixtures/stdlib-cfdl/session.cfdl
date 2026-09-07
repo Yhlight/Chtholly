@@ -1,0 +1,7 @@
+module std::session;
+foreign type Session: void* invalid null;
+foreign fn open() -> owned Session where result obliges close;
+foreign fn wait(session: ref_mut Session) -> void
+where session invokes complete;
+foreign fn close(session: ref_mut Session) -> void
+where session discharges close;

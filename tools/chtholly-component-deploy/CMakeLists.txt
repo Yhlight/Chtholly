@@ -1,0 +1,5 @@
+add_executable(chtholly-component-deploy main.cpp)
+chtholly_configure_target(chtholly-component-deploy)
+chtholly_configure_executable_artifacts(chtholly-component-deploy)
+target_link_libraries(chtholly-component-deploy PRIVATE chtholly_driver_support)
+install(TARGETS chtholly-component-deploy RUNTIME DESTINATION bin COMPONENT full)

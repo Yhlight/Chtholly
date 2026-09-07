@@ -1,0 +1,52 @@
+module std::host;
+
+foreign type Handle: void* invalid null;
+foreign struct Instant {
+  seconds: u64;
+  nanoseconds: u32;
+  reserved: u32;
+};
+foreign type TaskHandle: void* invalid null;
+
+foreign fn host_open(path: view const void*, path_size: u64, handle: out Handle) -> i32
+link "chtholly_next_host_v1_open"
+where handle obliges close;
+
+foreign fn host_open_read(path: view const void*, path_size: u64, handle: out Handle) -> i32
+link "chtholly_next_host_v1_open_read"
+where handle obliges close;
+foreign fn host_create(path: view const void*, path_size: u64, handle: out Handle) -> i32
+link "chtholly_next_host_v1_create"
+where handle obliges close;
+
+foreign fn host_read(handle: ref_mut Handle, buffer: view_mut void*, count: u64) -> i64
+link "chtholly_next_host_v1_read_ref";
+foreign fn host_write(handle: ref_mut Handle, buffer: view const void*, count: u64) -> i64
+link "chtholly_next_host_v1_write_ref";
+
+foreign fn host_close(handle: move Handle) -> i32
+link "chtholly_next_host_v1_close"
+where handle discharges close;
+
+foreign fn monotonic_now(value: out Instant) -> i32
+link "chtholly_next_host_v1_monotonic_now";
+
+foreign fn task_spawn(entry: view const void*, task: out TaskHandle) -> i32
+link "chtholly_next_host_v1_task_spawn"
+where task obliges task_join;
+
+foreign fn task_poll(task: ref_mut TaskHandle) -> i32
+link "chtholly_next_host_v1_task_poll_ref"
+where task invokes complete, task invokes cancelled, task invokes wake;
+
+foreign fn task_cancel(task: ref_mut TaskHandle) -> i32
+link "chtholly_next_host_v1_task_cancel_ref"
+where task invokes cancelled;
+
+foreign fn task_wake(task: ref_mut TaskHandle) -> i32
+link "chtholly_next_host_v1_task_wake_ref"
+where task invokes wake;
+
+foreign fn task_join(task: move TaskHandle) -> i32
+link "chtholly_next_host_v1_task_join"
+where task discharges task_join, task_join requires quiescent;

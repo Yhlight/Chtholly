@@ -1,0 +1,7 @@
+[package]
+name = "chtholly-vec-mut-iterator-runtime"
+language = "1.3"
+
+[build]
+entry = "main.cns"
+module_paths = ["."]

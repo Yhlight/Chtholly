@@ -1,0 +1,13 @@
+add_executable(chtholly_telemetry_component_host main.cpp)
+chtholly_configure_target(chtholly_telemetry_component_host)
+target_link_libraries(chtholly_telemetry_component_host PRIVATE
+  chtholly_component_loader_v1 chtholly_driver_support)
+
+add_executable(chtholly_telemetry_ingest_host ingest.cpp)
+chtholly_configure_target(chtholly_telemetry_ingest_host)
+target_link_libraries(chtholly_telemetry_ingest_host PRIVATE
+  chtholly_component_loader_v1 chtholly_driver_support
+  chtholly_next_runtime_v1)
+if(WIN32)
+  target_link_libraries(chtholly_telemetry_ingest_host PRIVATE ws2_32)
+endif()

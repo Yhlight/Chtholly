@@ -1,0 +1,56 @@
+module std::io;
+
+import std::error;
+import std::result;
+
+// Console writes are safe, synchronous byte writes. They return the number of
+// UTF-8 bytes written, or -1 when the host write fails.
+pub fn write_stdout(text: string): i64;
+pub fn write_stderr(text: string): i64;
+
+pub fn write_stdout_result(text: string): std::result::Result<usize, i32> {
+  let written = write_stdout(text);
+  if (written < 0i64) {
+    return std::result::Result<usize, i32>::Err { written as i32 };
+  }
+  return std::result::Result<usize, i32>::Ok { written as usize };
+}
+
+pub fn write_stderr_result(text: string): std::result::Result<usize, i32> {
+  let written = write_stderr(text);
+  if (written < 0i64) {
+    return std::result::Result<usize, i32>::Err { written as i32 };
+  }
+  return std::result::Result<usize, i32>::Ok { written as usize };
+}
+
+pub fn write_stdout_error(
+    text: string): std::result::Result<usize, std::error::ErrorCode> {
+  let written = write_stdout(text);
+  if (written < 0i64) {
+    return std::result::Result<usize, std::error::ErrorCode>::Err {
+      std::error::from_errno(written as i32)
+    };
+  }
+  return std::result::Result<usize, std::error::ErrorCode>::Ok {
+    written as usize
+  };
+}
+
+pub fn write_stderr_error(
+    text: string): std::result::Result<usize, std::error::ErrorCode> {
+  let written = write_stderr(text);
+  if (written < 0i64) {
+    return std::result::Result<usize, std::error::ErrorCode>::Err {
+      std::error::from_errno(written as i32)
+    };
+  }
+  return std::result::Result<usize, std::error::ErrorCode>::Ok {
+    written as usize
+  };
+}
+
+pub enum ReadOutcome<T> {
+  Data { T },
+  Eof,
+}

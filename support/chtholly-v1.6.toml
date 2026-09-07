@@ -1,0 +1,23 @@
+schema = "chtholly-language-surface-v3"
+release = "1.6"
+status = "frozen"
+compiler = "chtholly"
+base = "support/chtholly-v1.5.toml"
+
+normative_specs = [
+  "docs/spec/v1.6-language-roadmap.md",
+]
+
+[[feature]]
+id = "standard-iteration-ecosystem"
+title = "Range, slice iterator, and adapter ecosystem"
+scope = "v1.6"
+design = "normative"
+implementation = "complete"
+spec = "docs/spec/v1.6-language-roadmap.md#standard-iteration-ecosystem"
+tokens = ["KwTrait", "KwImpl", "KwWhere", "KwMove", "KwCopy", "KwForeach"]
+nodes = ["InterfaceDecl", "ImplDecl", "ConstraintList", "CallExpr", "ForeachStmt"]
+evidence = [
+  "tests/chtholly_iterator_ecosystem_tests.py",
+  "stdlib/iter_adapters.cns",
+]

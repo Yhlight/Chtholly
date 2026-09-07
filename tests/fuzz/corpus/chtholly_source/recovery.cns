@@ -1,0 +1,3 @@
+module fuzz;
+fn broken<T>(value: T): T {
+  if (true { return move value }
